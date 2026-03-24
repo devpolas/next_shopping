@@ -8,6 +8,7 @@ import { userSignupSchema } from "@/lib/validators/user-schema";
 import { toast } from "sonner";
 import { FormRhfInput } from "./form-rhf-input";
 import LoadingSpinner from "../spinner/loading-spinner";
+import { signup } from "@/lib/actions/auth.actions";
 
 type FormValues = z.infer<typeof userSignupSchema>;
 
@@ -33,9 +34,11 @@ export default function SignupForm() {
   async function handleSignup(formData: FormValues) {
     try {
       // simulate API
-      console.log(formData);
+      const response = await signup(formData);
 
-      toast.success("Account created successfully 🎉");
+      if (response.success) {
+        toast.success("Account created successfully 🎉");
+      }
     } catch (error) {
       toast.error("Something went wrong");
     }
