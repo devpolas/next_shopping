@@ -13,10 +13,13 @@ function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
   );
 }
 
-export default function LoadingSpinner() {
+export default function LoadingSpinner({ text }: { text?: string }) {
   return (
     <div className='flex items-center gap-4'>
-      <Spinner />
+      <div className='flex flex-row gap-2'>
+        <Spinner />
+        <p>{text}</p>
+      </div>
     </div>
   );
 }
