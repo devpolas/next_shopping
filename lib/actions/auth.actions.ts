@@ -87,6 +87,8 @@ export async function signin(
       headers: await headers(),
     });
 
+    console.log(response);
+
     if (!response.ok) {
       const errorData = await response.json();
 
@@ -114,6 +116,25 @@ export async function signin(
       success: false,
       message: "Unexpected error occurred during signin",
     };
+  }
+}
+
+export async function continueWithGoogle(): Promise<AuthResult> {
+  const result = await auth.api.signInSocial({
+    body: {
+      provider: "google",
+      callbackURL: "/",
+    },
+    headers: await headers(),
+  });
+
+  console.log(result);
+
+  if (result.url) {
+    redirect(result.url);
+  } else {
+    console.error("Google signin error: no redirect URL returned");
+    return { success: false, message: "Google auth failed" };
   }
 }
 

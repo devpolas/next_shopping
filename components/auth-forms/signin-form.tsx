@@ -30,6 +30,7 @@ export default function SigninForm() {
   async function handleSignin(formData: FormValues) {
     try {
       const response = await signin(formData);
+      console.log(response);
       if (response.success) {
         toast.success("Logged in successfully 🎉");
       }
