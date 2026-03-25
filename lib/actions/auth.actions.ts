@@ -20,8 +20,6 @@ export async function signup(
 ): Promise<AuthResult> {
   const parsed = userSignupSchema.safeParse(data);
 
-  console.log(parsed.data);
-
   if (!parsed.success) {
     return {
       success: false,
