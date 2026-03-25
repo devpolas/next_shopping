@@ -1,7 +1,7 @@
 "use server";
 
 import * as z from "zod";
-import { userSignupSchema } from "../validators/user-schema";
+import { userSigninSchema, userSignupSchema } from "../validators/user-schema";
 import { auth } from "../auth";
 import { headers } from "next/headers";
 
@@ -59,6 +59,59 @@ export async function signup(
     return {
       success: false,
       message: "Unexpected error occurred during signup",
+    };
+  }
+}
+
+export async function signin(
+  data: z.infer<typeof userSigninSchema>,
+): Promise<AuthResult> {
+  const parsed = userSigninSchema.safeParse(data);
+
+  if (!parsed.success) {
+    const firstError = parsed.error.issues[0];
+
+    return {
+      success: false,
+      message: firstError?.message || "Invalid input",
+    };
+  }
+
+  const { email, password } = parsed.data;
+
+  try {
+    const response = await auth.api.signInEmail({
+      body: { email, password },
+      asResponse: true,
+      headers: await headers(),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+
+      return {
+        success: false,
+        message: errorData?.message || "Signin failed",
+      };
+    }
+
+    return {
+      success: true,
+      message: "User login successfully",
+    };
+  } catch (error: unknown) {
+    console.error(error);
+
+    if (error instanceof Error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+
+    return {
+      success: false,
+      message: "Unexpected error occurred during signin",
     };
   }
 }

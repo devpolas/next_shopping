@@ -10,6 +10,7 @@ import { userSigninSchema } from "@/lib/validators/user-schema";
 import { toast } from "sonner";
 import { FormRhfInput } from "./form-rhf-input";
 import LoadingSpinner from "../spinner/loading-spinner";
+import { signin } from "@/lib/actions/auth.actions";
 
 type FormValues = z.infer<typeof userSigninSchema>;
 
@@ -28,8 +29,10 @@ export default function SigninForm() {
 
   async function handleSignin(formData: FormValues) {
     try {
-      console.log(formData);
-      toast.success("Logged in successfully 🎉");
+      const response = await signin(formData);
+      if (response.success) {
+        toast.success("Logged in successfully 🎉");
+      }
     } catch (error) {
       toast.error("Something went wrong");
     }
