@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import ThemeProvider from "@/components/theme/theme-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -22,23 +23,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang='en'
       className={cn(
-        "h-full",
-        "antialiased",
+        "h-full antialiased",
         geistSans.variable,
         geistMono.variable,
-        "font-sans",
         inter.variable,
       )}
       suppressHydrationWarning
     >
-      <body className='flex flex-col min-h-full'>{children}</body>
+      <head />
+      <body className='h-full'>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }
