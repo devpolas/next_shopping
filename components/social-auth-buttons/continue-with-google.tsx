@@ -11,14 +11,9 @@ export default function ContinueWithGoogle() {
   async function handleContinueWithGoogle() {
     setIsLoading(true);
     try {
-      const response = await continueWithGoogle();
-      console.log(response);
-      if (response.success) {
-        toast.success("Logged in successfully 🎉");
-      }
-    } catch (error) {
+      await continueWithGoogle(); // no response handling
+    } catch {
       toast.error("Something went wrong");
-    } finally {
       setIsLoading(false);
     }
   }

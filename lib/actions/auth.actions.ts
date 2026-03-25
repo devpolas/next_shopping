@@ -35,7 +35,7 @@ export async function signup(
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => null);
 
       return {
         success: false,
@@ -87,10 +87,8 @@ export async function signin(
       headers: await headers(),
     });
 
-    console.log(response);
-
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => null);
 
       return {
         success: false,
@@ -119,7 +117,7 @@ export async function signin(
   }
 }
 
-export async function continueWithGoogle(): Promise<AuthResult> {
+export async function continueWithGoogle(): Promise<void> {
   const result = await auth.api.signInSocial({
     body: {
       provider: "google",
@@ -128,14 +126,11 @@ export async function continueWithGoogle(): Promise<AuthResult> {
     headers: await headers(),
   });
 
-  console.log(result);
-
   if (result.url) {
     redirect(result.url);
-  } else {
-    console.error("Google signin error: no redirect URL returned");
-    return { success: false, message: "Google auth failed" };
   }
+
+  throw new Error("Google auth failed");
 }
 
 export async function signOut(): Promise<void> {
@@ -144,5 +139,6 @@ export async function signOut(): Promise<void> {
 }
 
 export async function session() {
-  return auth.api.getSession({ headers: await headers() });
+  const res = await auth.api.getSession({ headers: await headers() });
+  return res?.user ?? null;
 }
