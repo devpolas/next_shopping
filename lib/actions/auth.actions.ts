@@ -4,6 +4,7 @@ import * as z from "zod";
 import { userSigninSchema, userSignupSchema } from "../validators/user-schema";
 import { auth } from "../auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 type AuthResult = {
   success: boolean;
@@ -114,4 +115,13 @@ export async function signin(
       message: "Unexpected error occurred during signin",
     };
   }
+}
+
+export async function signOut(): Promise<void> {
+  await auth.api.signOut({ headers: await headers() });
+  redirect("/signin");
+}
+
+export async function session() {
+  return auth.api.getSession({ headers: await headers() });
 }
