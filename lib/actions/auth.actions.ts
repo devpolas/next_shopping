@@ -11,55 +11,49 @@ type AuthResult = {
   message: string;
 };
 
+async function getHeaders() {
+  return await headers();
+}
+
 export async function signup(
   data: z.infer<typeof userSignupSchema>,
 ): Promise<AuthResult> {
   const parsed = userSignupSchema.safeParse(data);
 
-  if (!parsed.success) {
-    const firstError = parsed.error.issues[0];
+  console.log(parsed.data);
 
+  if (!parsed.success) {
     return {
       success: false,
-      message: firstError?.message || "Invalid input",
+      message: parsed.error.issues[0]?.message || "Invalid input",
     };
   }
 
-  const { name, email, password } = parsed.data;
+  const { name, email, password, confirmPassword } = parsed.data;
+
+  if (password !== confirmPassword) {
+    return {
+      success: false,
+      message: "password doesn't match",
+    };
+  }
 
   try {
-    const response = await auth.api.signUpEmail({
+    await auth.api.signUpEmail({
       body: { name, email, password },
-      asResponse: true,
-      headers: await headers(),
+      headers: await getHeaders(),
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-
-      return {
-        success: false,
-        message: errorData?.message || "Signup failed",
-      };
-    }
 
     return {
       success: true,
       message: "User created successfully",
     };
-  } catch (error: unknown) {
-    console.error(error);
-
-    if (error instanceof Error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+  } catch (error) {
+    console.error("SIGNUP ERROR:", error);
 
     return {
       success: false,
-      message: "Unexpected error occurred during signup",
+      message: error instanceof Error ? error.message : "Signup failed",
     };
   }
 }
@@ -70,49 +64,30 @@ export async function signin(
   const parsed = userSigninSchema.safeParse(data);
 
   if (!parsed.success) {
-    const firstError = parsed.error.issues[0];
-
     return {
       success: false,
-      message: firstError?.message || "Invalid input",
+      message: parsed.error.issues[0]?.message || "Invalid input",
     };
   }
 
   const { email, password } = parsed.data;
 
   try {
-    const response = await auth.api.signInEmail({
+    await auth.api.signInEmail({
       body: { email, password },
-      asResponse: true,
-      headers: await headers(),
+      headers: await getHeaders(),
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-
-      return {
-        success: false,
-        message: errorData?.message || "Signin failed",
-      };
-    }
 
     return {
       success: true,
       message: "User login successfully",
     };
-  } catch (error: unknown) {
-    console.error(error);
-
-    if (error instanceof Error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+  } catch (error) {
+    console.error("SIGNIN ERROR:", error);
 
     return {
       success: false,
-      message: "Unexpected error occurred during signin",
+      message: error instanceof Error ? error.message : "Signin failed",
     };
   }
 }
@@ -123,7 +98,7 @@ export async function continueWithGoogle(): Promise<void> {
       provider: "google",
       callbackURL: "/",
     },
-    headers: await headers(),
+    headers: await getHeaders(),
   });
 
   if (result.url) {
@@ -134,11 +109,11 @@ export async function continueWithGoogle(): Promise<void> {
 }
 
 export async function signOut(): Promise<void> {
-  await auth.api.signOut({ headers: await headers() });
+  await auth.api.signOut({ headers: await getHeaders() });
   redirect("/signin");
 }
 
 export async function session() {
-  const res = await auth.api.getSession({ headers: await headers() });
+  const res = await auth.api.getSession({ headers: await getHeaders() });
   return res?.user ?? null;
 }

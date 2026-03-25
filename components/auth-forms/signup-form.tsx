@@ -36,6 +36,8 @@ export default function SignupForm() {
       // simulate API
       const response = await signup(formData);
 
+      console.log(response);
+
       if (response.success) {
         toast.success("Account created successfully 🎉");
       }
