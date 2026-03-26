@@ -6,6 +6,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ResetPasswordForm from "./reset-password-form";
+import { Suspense } from "react";
+import LoadingSpinner from "@/components/spinner/loading-spinner";
 
 export default function ResetPassword() {
   return (
@@ -18,7 +20,9 @@ export default function ResetPassword() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResetPasswordForm />
+        <Suspense fallback={<LoadingSpinner text='Reset Form Loading...' />}>
+          <ResetPasswordForm />
+        </Suspense>
       </CardContent>
     </Card>
   );
