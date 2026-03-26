@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "../ui/button";
+import { Button } from "../../../components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { userSignupSchema } from "@/lib/validators/user-schema";
 import { toast } from "sonner";
-import { FormRhfInput } from "./form-rhf-input";
-import LoadingSpinner from "../spinner/loading-spinner";
+import { FormRhfInput } from "../../../components/rhf-input/form-rhf-input";
+import LoadingSpinner from "../../../components/spinner/loading-spinner";
 import { signup } from "@/lib/actions/auth.actions";
 
 type FormValues = z.infer<typeof userSignupSchema>;
@@ -91,7 +91,7 @@ export default function SignupForm() {
         variant={"outline"}
         type='submit'
         className='mt-4 w-full'
-        disabled={isSubmitting}
+        disabled={isSubmitting || password !== confirmPassword}
       >
         {isSubmitting ? (
           <LoadingSpinner text='Creating...' />

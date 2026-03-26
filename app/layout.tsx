@@ -39,7 +39,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head />
-      <body className='h-full'>
+      <body className='h-full' cz-shortcut-listen='true'>
         <ThemeProvider>
           {children}
           <Toaster />

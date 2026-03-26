@@ -1,18 +1,18 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "../ui/button";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { userSigninSchema } from "@/lib/validators/user-schema";
 import { toast } from "sonner";
-import { FormRhfInput } from "./form-rhf-input";
-import LoadingSpinner from "../spinner/loading-spinner";
+
 import { signin } from "@/lib/actions/auth.actions";
 import { useState } from "react";
-import { Paragraph } from "../typography/typography";
+import { Paragraph } from "@/components/typography/typography";
+import { FormRhfInput } from "@/components/rhf-input/form-rhf-input";
+import { Button } from "@/components/ui/button";
+import LoadingSpinner from "@/components/spinner/loading-spinner";
+import Link from "next/link";
 
 type FormValues = z.infer<typeof userSigninSchema>;
 
@@ -65,7 +65,7 @@ export default function SigninForm() {
           <div className='flex justify-between items-center'>
             <span className='font-medium text-sm'>Password</span>
             <Link
-              href='#'
+              href='/forget-password'
               className='text-sm hover:underline underline-offset-4'
             >
               Forgot your password?
@@ -89,7 +89,7 @@ export default function SigninForm() {
         disabled={isSubmitting}
       >
         {isSubmitting ? (
-          <LoadingSpinner text='logging in.....' />
+          <LoadingSpinner text='logging in...' />
         ) : (
           <span>Login</span>
         )}

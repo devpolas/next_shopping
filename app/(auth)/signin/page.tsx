@@ -1,5 +1,4 @@
 import Link from "next/link";
-import SigninForm from "@/components/auth-forms/signin-form";
 import ContinueWithGoogle from "@/components/social-auth-buttons/continue-with-google";
 
 import {
@@ -12,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Heading4 } from "@/components/typography/typography";
+import SigninForm from "./signin-form";
 
 export default async function SigninPage() {
   return (
@@ -24,7 +24,7 @@ export default async function SigninPage() {
         </CardDescription>
         <CardAction>
           <Link className='hover:underline' href={"/signup"}>
-            Sign Up
+            Sign up
           </Link>
         </CardAction>
       </CardHeader>
