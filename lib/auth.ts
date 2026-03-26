@@ -2,6 +2,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { admin } from "better-auth/plugins";
 import prisma from "./db";
 import { sendEmail } from "./actions/email.actions";
 import { APIError, createAuthMiddleware } from "better-auth/api";
@@ -95,6 +96,15 @@ export const auth = betterAuth({
         },
       });
     },
+    customSyntheticUser: ({ coreFields, additionalFields, id }) => ({
+      ...coreFields,
+      role: "user",
+      banned: false,
+      banReason: null,
+      banExpires: null,
+      ...additionalFields,
+      id,
+    }),
   },
 
   emailVerification: {
@@ -140,7 +150,7 @@ export const auth = betterAuth({
   },
 
   // Next.js cookies plugin
-  plugins: [nextCookies()],
+  plugins: [nextCookies(), admin()],
 
   hooks: {
     before: createAuthMiddleware(async (ctx) => {

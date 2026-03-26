@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -8,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id            String    @id    @default(uuid())
+  id            String    @id @default(uuid())
   name          String
   email         String
   emailVerified Boolean   @default(false)
@@ -17,6 +18,11 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+
+  role       String?
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
 
   @@unique([email])
   @@map("user")
@@ -32,6 +38,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@index([userId])
@@ -70,14 +78,13 @@ model Verification {
   @@map("verification")
 }
 
-
 model Product {
-  id  String @id @default(uuid())
+  id        String   @id @default(uuid())
   productId String
-  name  String
-  price Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  name      String
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("products")
 }
