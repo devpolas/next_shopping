@@ -153,3 +153,21 @@ export async function resetPassword(data: { password: string; token: string }) {
     };
   }
 }
+
+export async function sendVerificationEmail(email: string) {
+  try {
+    const result = await auth.api.sendVerificationEmail({
+      body: {
+        email: email,
+      },
+    });
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Verification email send failed:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "failed to send verify email",
+    };
+  }
+}

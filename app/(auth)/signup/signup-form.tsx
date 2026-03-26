@@ -42,7 +42,10 @@ export default function SignupForm() {
 
       if (response.success) {
         toast.success("Account created successfully 🎉");
-        router.push("/signin");
+        await new Promise((resolve) => setTimeout(resolve, 200)); // small delay
+        router.push(
+          `/verify-account?email=${encodeURIComponent(formData.email)}`,
+        );
       }
     } catch (error) {
       toast.error("Something went wrong");
