@@ -11,10 +11,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Heading4 } from "@/components/typography/typography";
 
 export default async function SigninPage() {
   return (
     <Card className='w-full max-w-sm'>
+      <Heading4 className={"text-center"} text='Welcome Back' />
       <CardHeader>
         <CardTitle>Signin to your account</CardTitle>
         <CardDescription>

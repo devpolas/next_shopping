@@ -87,7 +87,12 @@ export default function SignupForm() {
         )}
       </div>
 
-      <Button type='submit' className='mt-4 w-full' disabled={isSubmitting}>
+      <Button
+        variant={"outline"}
+        type='submit'
+        className='mt-4 w-full'
+        disabled={isSubmitting}
+      >
         {isSubmitting ? (
           <LoadingSpinner text='Creating...' />
         ) : (

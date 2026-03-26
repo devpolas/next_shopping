@@ -11,10 +11,13 @@ import { toast } from "sonner";
 import { FormRhfInput } from "./form-rhf-input";
 import LoadingSpinner from "../spinner/loading-spinner";
 import { signin } from "@/lib/actions/auth.actions";
+import { useState } from "react";
+import { Paragraph } from "../typography/typography";
 
 type FormValues = z.infer<typeof userSigninSchema>;
 
 export default function SigninForm() {
+  const [isError, setIsError] = useState<string>("");
   const {
     control,
     handleSubmit,
@@ -28,20 +31,27 @@ export default function SigninForm() {
   });
 
   async function handleSignin(formData: FormValues) {
+    setIsError("");
     try {
       const response = await signin(formData);
       console.log(response);
       if (response.success) {
         toast.success("Logged in successfully 🎉");
+      } else {
+        setIsError("Invalid Credentials");
       }
     } catch (error) {
       toast.error("Something went wrong");
+      setIsError("Invalid Credentials");
     }
   }
 
   return (
     <form onSubmit={handleSubmit(handleSignin)}>
       <div className='flex flex-col gap-6'>
+        {isError && (
+          <Paragraph className={"text-center text-red-600"} text={isError} />
+        )}
         <FormRhfInput<FormValues>
           name='email'
           type='email'
@@ -72,7 +82,12 @@ export default function SigninForm() {
         </div>
       </div>
 
-      <Button type='submit' className='mt-4 w-full' disabled={isSubmitting}>
+      <Button
+        variant={"outline"}
+        type='submit'
+        className='mt-4 w-full'
+        disabled={isSubmitting}
+      >
         {isSubmitting ? (
           <LoadingSpinner text='logging in.....' />
         ) : (
