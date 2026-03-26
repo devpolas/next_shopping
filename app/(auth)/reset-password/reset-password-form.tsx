@@ -51,6 +51,7 @@ export default function ResetPasswordForm() {
   async function handleResetPassword(data: FormValues) {
     if (!token) {
       toast.error("Invalid or expired reset link");
+      await new Promise((resolve) => setTimeout(resolve, 200)); // small delay
       router.push("/forgot-password");
       return null;
     }
@@ -62,7 +63,11 @@ export default function ResetPasswordForm() {
 
       if (result.success) {
         toast.success("Your password has been changed successfully");
-        router.push("/signin");
+        if (result.success) {
+          toast.success("Your password has been changed successfully");
+          await new Promise((resolve) => setTimeout(resolve, 200)); // small delay
+          router.push("/signin");
+        }
       } else {
         throw new Error(result.error);
       }

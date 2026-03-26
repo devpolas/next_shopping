@@ -37,6 +37,7 @@ export default function ForgetPasswordForm() {
 
       if (result.success) {
         toast.success("Password reset link sent to your email.");
+        await new Promise((resolve) => setTimeout(resolve, 200)); // small delay
         router.push("/signin");
       } else {
         throw new Error(result.error);
