@@ -9,10 +9,12 @@ import { toast } from "sonner";
 import { FormRhfInput } from "../../../components/rhf-input/form-rhf-input";
 import LoadingSpinner from "../../../components/spinner/loading-spinner";
 import { signup } from "@/lib/actions/auth.actions";
+import { useRouter } from "next/navigation";
 
 type FormValues = z.infer<typeof userSignupSchema>;
 
 export default function SignupForm() {
+  const router = useRouter();
   const {
     control,
     watch,
@@ -40,6 +42,7 @@ export default function SignupForm() {
 
       if (response.success) {
         toast.success("Account created successfully 🎉");
+        router.push("/signin");
       }
     } catch (error) {
       toast.error("Something went wrong");

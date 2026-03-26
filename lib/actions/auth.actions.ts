@@ -129,15 +129,13 @@ export async function forgotPassword(data: { email: string }) {
     console.error("Forgot password failed:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Forgot password failed",
+      error:
+        error instanceof Error ? error.message : "Failed to send forget link",
     };
   }
 }
 
-export async function resetPassword(data: {
-  password: string;
-  token?: string;
-}) {
+export async function resetPassword(data: { password: string; token: string }) {
   try {
     const result = await auth.api.resetPassword({
       body: {
@@ -150,7 +148,8 @@ export async function resetPassword(data: {
     console.error("Reset password failed:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Reset password failed",
+      error:
+        error instanceof Error ? error.message : "Failed to reset password",
     };
   }
 }

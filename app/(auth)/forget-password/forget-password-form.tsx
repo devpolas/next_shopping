@@ -37,7 +37,7 @@ export default function ForgetPasswordForm() {
 
       if (result.success) {
         toast.success("Password reset link sent to your email.");
-        router.push("/login");
+        router.push("/signin");
       } else {
         throw new Error(result.error);
       }
@@ -46,7 +46,7 @@ export default function ForgetPasswordForm() {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Forgot password failed. Please try again.",
+          : "Failed to send forget link. Please try again.",
       );
     }
   }

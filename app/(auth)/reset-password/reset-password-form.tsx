@@ -1,4 +1,5 @@
 "use client";
+
 import { FormRhfInput } from "@/components/rhf-input/form-rhf-input";
 import LoadingSpinner from "@/components/spinner/loading-spinner";
 import { Button } from "@/components/ui/button";
@@ -27,8 +28,7 @@ type FormValues = z.infer<typeof forgetPasswordSchema>;
 
 export default function ResetPasswordForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+
   const {
     control,
     handleSubmit,
@@ -45,6 +45,9 @@ export default function ResetPasswordForm() {
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   async function handleResetPassword(data: FormValues) {
     if (!token) {
       toast.error("Invalid or expired reset link");
@@ -54,7 +57,7 @@ export default function ResetPasswordForm() {
     try {
       const result = await resetPassword({
         password: data.password,
-        token: token || undefined,
+        token: token,
       });
 
       if (result.success) {
@@ -71,6 +74,17 @@ export default function ResetPasswordForm() {
           : "Reset password failed. Please try again.",
       );
     }
+  }
+
+  if (!token) {
+    return (
+      <div className='p-6 text-center'>
+        <p className='text-red-500'>Invalid or expired reset link.</p>
+        <a href='/forgot-password' className='text-blue-500 underline'>
+          Request a new password reset
+        </a>
+      </div>
+    );
   }
 
   return (
