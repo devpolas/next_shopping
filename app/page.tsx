@@ -1,11 +1,9 @@
-import { ThemeSwitcher } from "@/components/theme/theme-switcher";
-import { Heading3 } from "@/components/typography/typography";
+import AppLayout from "@/components/layouts/app-layout";
 
 export default function Home() {
   return (
-    <div>
-      <ThemeSwitcher />
-      <Heading3 text='Next Shopping' className={"text-green-400"} />
-    </div>
+    <AppLayout>
+      <h1>Home page</h1>
+    </AppLayout>
   );
 }
