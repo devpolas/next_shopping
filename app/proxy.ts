@@ -7,6 +7,8 @@ const AUTH_PATH = ["/signin", "/signup"];
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
+  console.log("run proxy");
+
   // Skip Next.js internals
   if (pathname.startsWith("/_next") || pathname.startsWith("/favicon.ico")) {
     return NextResponse.next();
@@ -41,5 +43,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    // Exclude API routes, static files, image optimizations, and .png files
+    "/((?!api|_next/static|_next/image|.*\\.png$).*)",
+  ],
 };
