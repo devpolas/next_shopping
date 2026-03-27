@@ -3,9 +3,9 @@
 import {
   BadgeCheckIcon,
   BellIcon,
+  CircleUserRound,
   CreditCardIcon,
   LogOutIcon,
-  User,
   UserKey,
   UserPlus,
 } from "lucide-react";
@@ -76,9 +76,13 @@ function DropdownWithoutAuth() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"outline"} size={"icon"}>
-          <User size={32} />
-        </Button>
+        <button
+          type='button'
+          title='button'
+          className='flex justify-center items-center p-0 rounded-full outline-0 ring-offset-0 w-6 h-6 hover:cursor-pointer'
+        >
+          <CircleUserRound className='w-5 h-5' />
+        </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end' className='w-32'>
@@ -107,7 +111,7 @@ function DropdownWithoutAuth() {
 }
 
 export default function AuthButton() {
-  const user = null; // 🔥 replace with real auth
+  const user = null;
 
   return user ? <DropDownWithAuth /> : <DropdownWithoutAuth />;
 }
