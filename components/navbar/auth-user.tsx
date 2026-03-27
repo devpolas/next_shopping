@@ -76,7 +76,7 @@ function DropdownWithoutAuth() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' size='icon-lg'>
+        <Button variant={"outline"} size={"icon"}>
           <User size={32} />
         </Button>
       </DropdownMenuTrigger>
