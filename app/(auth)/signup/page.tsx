@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import SignupForm from "./signup-form";
 import { Metadata } from "next";
+import { FieldSeparator } from "@/components/ui/field";
 
 export const metadata: Metadata = {
   title: "Signup",
@@ -34,6 +35,11 @@ export default async function SignupPage() {
       <CardContent>
         <SignupForm />
       </CardContent>
+
+      <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
+        Or continue with
+      </FieldSeparator>
+
       <CardFooter>
         <ContinueWithGoogle />
       </CardFooter>

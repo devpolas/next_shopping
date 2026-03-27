@@ -13,6 +13,7 @@ import {
 import { Heading4 } from "@/components/typography/typography";
 import SigninForm from "./signin-form";
 import { Metadata } from "next";
+import { FieldSeparator } from "@/components/ui/field";
 
 export const metadata: Metadata = {
   title: "Signin",
@@ -37,6 +38,11 @@ export default async function SigninPage() {
       <CardContent>
         <SigninForm />
       </CardContent>
+
+      <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
+        Or continue with
+      </FieldSeparator>
+
       <CardFooter>
         <ContinueWithGoogle />
       </CardFooter>
