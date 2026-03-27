@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/card";
 import { Heading4 } from "@/components/typography/typography";
 import SigninForm from "./signin-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Signin",
+  description: "Next Shopping Signin Page",
+};
 
 export default async function SigninPage() {
   return (
@@ -24,7 +30,7 @@ export default async function SigninPage() {
         </CardDescription>
         <CardAction>
           <Link className='hover:underline' href={"/signup"}>
-            Sign up
+            Signup
           </Link>
         </CardAction>
       </CardHeader>

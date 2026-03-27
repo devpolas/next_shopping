@@ -8,6 +8,12 @@ import {
 import ResetPasswordForm from "./reset-password-form";
 import { Suspense } from "react";
 import LoadingSpinner from "@/components/spinner/loading-spinner";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Reset Password",
+  description: "Next Shopping Reset Password Page",
+};
 
 export default function ResetPassword() {
   return (

@@ -13,6 +13,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useTransition } from "react"; // Added useTransition
 import { toast } from "sonner";
 import LoadingSpinner from "@/components/spinner/loading-spinner";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Verify Account",
+  description: "Next Shopping Verify Account Page",
+};
 
 function VerifyEmailContent() {
   const router = useRouter();

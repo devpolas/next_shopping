@@ -6,6 +6,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ForgetPasswordForm from "./forget-password-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Forget Password",
+  description: "Next Shopping Forget Password Page",
+};
 
 export default function ForgetPassword() {
   return (
