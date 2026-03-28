@@ -43,6 +43,7 @@ export default function SigninForm() {
         toast.success("Logged in successfully 🎉");
         await new Promise((resolve) => setTimeout(resolve, 200)); // small delay
         router.push(callbackURL || "/");
+        router.refresh();
       } else {
         if (response.redirectTo) {
           toast.error("Please verify your account");

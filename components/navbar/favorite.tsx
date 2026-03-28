@@ -1,8 +1,11 @@
+"use client";
 import { Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Favorite({ count = 0 }: { count?: number }) {
+  const router = useRouter();
   return (
-    <div>
+    <div onClick={() => router.push("/favorite")}>
       <p className='flex justify-center items-center p-0 rounded-full outline-0 ring-offset-0 w-6 h-6 hover:cursor-pointer'>
         <span className='inline-flex relative'>
           <Heart className='w-5 h-5' />

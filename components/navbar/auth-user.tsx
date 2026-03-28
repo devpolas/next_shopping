@@ -2,9 +2,8 @@
 
 import {
   BadgeCheckIcon,
-  BellIcon,
   CircleUserRound,
-  CreditCardIcon,
+  HistoryIcon,
   LogOutIcon,
   UserKey,
   UserPlus,
@@ -23,47 +22,69 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import Link from "next/link";
+import { authClient } from "../../lib/auth-client";
+import { signOut } from "@/lib/actions/auth.actions";
+import { getInitials } from "@/lib/get-initials";
+import { useRouter } from "next/navigation";
+import { UserType } from "@/types/user";
+import { useEffect } from "react";
 
-function DropDownWithAuth() {
+function DropDownWithAuth({
+  user,
+  handleSignout,
+}: {
+  user: UserType;
+  handleSignout: () => void;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant='ghost' size='icon' className='rounded-full'>
           <Avatar>
-            <AvatarImage src='https://github.com/shadcn.png' />
-            <AvatarFallback>LR</AvatarFallback>
+            <AvatarImage
+              className='rounded-full w-5 h-5'
+              src={`${user?.image}` || undefined}
+            />
+            <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end' className='w-48'>
-        {/* Optional user info */}
         <div className='px-2 py-1.5 text-muted-foreground text-sm'>
-          user@email.com
+          {user?.email}
         </div>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheckIcon className='mr-2 w-4 h-4' />
-            Account
-          </DropdownMenuItem>
+          <Link
+            href={"/profile"}
+            className='hover:underline hover:cursor-pointer'
+          >
+            <DropdownMenuItem className='hover:cursor-pointer'>
+              <BadgeCheckIcon className='mr-2 w-4 h-4' />
+              Profile
+            </DropdownMenuItem>
+          </Link>
 
-          <DropdownMenuItem>
-            <CreditCardIcon className='mr-2 w-4 h-4' />
-            Billing
-          </DropdownMenuItem>
-
-          <DropdownMenuItem>
-            <BellIcon className='mr-2 w-4 h-4' />
-            Notifications
-          </DropdownMenuItem>
+          <Link
+            href={"/history"}
+            className='hover:underline hover:cursor-pointer'
+          >
+            <DropdownMenuItem className='hover:cursor-pointer'>
+              <HistoryIcon className='mr-2 w-4 h-4' />
+              Purchase History
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className='text-red-500'>
+        <DropdownMenuItem
+          className='text-red-500 hover:cursor-pointer'
+          onClick={handleSignout}
+        >
           <LogOutIcon className='mr-2 w-4 h-4' />
           Sign Out
         </DropdownMenuItem>
@@ -111,7 +132,20 @@ function DropdownWithoutAuth() {
 }
 
 export default function AuthButton() {
-  const user = null;
+  const router = useRouter();
+  const session = authClient.useSession();
+  const user = session.data?.user;
 
-  return user ? <DropDownWithAuth /> : <DropdownWithoutAuth />;
+  function handleSignout() {
+    signOut();
+    router.push("/signin");
+    router.refresh();
+  }
+
+  if (session.isPending) return null; // or spinner
+  return user ? (
+    <DropDownWithAuth handleSignout={handleSignout} user={user} />
+  ) : (
+    <DropdownWithoutAuth />
+  );
 }

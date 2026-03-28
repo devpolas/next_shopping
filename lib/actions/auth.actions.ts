@@ -4,6 +4,7 @@ import * as z from "zod";
 import { userSigninSchema, userSignupSchema } from "../validators/user-schema";
 import { auth } from "../auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 // ================= TYPES =================
 
@@ -172,9 +173,13 @@ export async function continueWithGoogle(): Promise<AuthResult> {
 
 export async function signOut(): Promise<AuthResult> {
   try {
-    await auth.api.signOut({
+    const res = await auth.api.signOut({
       headers: await getHeaders(),
     });
+
+    if (res.success) {
+      redirect("/signin");
+    }
 
     return {
       success: true,

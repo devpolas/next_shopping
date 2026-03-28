@@ -193,3 +193,6 @@ export const auth = betterAuth({
   // Optional: enable debug logs in development
   debug: process.env.NODE_ENV !== "production",
 });
+
+export type SessionType = typeof auth.$Infer.Session;
+export type UserType = typeof auth.$Infer.Session.user;
