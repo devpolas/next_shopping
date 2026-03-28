@@ -13,10 +13,12 @@ import { FormRhfInput } from "@/components/rhf-input/form-rhf-input";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/spinner/loading-spinner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type FormValues = z.infer<typeof userSigninSchema>;
 
 export default function SigninForm() {
+  const router = useRouter();
   const [isError, setIsError] = useState<string>("");
   const {
     control,
@@ -38,6 +40,12 @@ export default function SigninForm() {
       if (response.success) {
         toast.success("Logged in successfully 🎉");
       } else {
+        if (response.redirectTo) {
+          toast.error("Please verify your account");
+          router.push(
+            `/verify-account?email=${encodeURIComponent(formData.email)}`,
+          );
+        }
         setIsError("Invalid Credentials");
       }
     } catch (error) {
