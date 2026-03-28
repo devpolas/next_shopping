@@ -24,7 +24,6 @@ export default function MobileDownNav() {
     <div className='md:hidden right-0 bottom-0 left-0 fixed bg-background shadow-md border-t w-full'>
       <ToggleGroup
         type='single'
-        defaultValue='top'
         variant='outline'
         className='flex w-full' // Full width & 5rem height
         value={getValue(pathname)}
