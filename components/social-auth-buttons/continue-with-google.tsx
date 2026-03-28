@@ -5,13 +5,18 @@ import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 import { useState } from "react";
 import LoadingSpinner from "../spinner/loading-spinner";
+import { useRouter } from "next/navigation";
 
 export default function ContinueWithGoogle() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   async function handleContinueWithGoogle() {
     setIsLoading(true);
     try {
-      await continueWithGoogle(); // no response handling
+      const res = await continueWithGoogle(); // no response handling
+      if (res.success && res.redirectTo) {
+        router.push(res.redirectTo);
+      }
     } catch {
       toast.error("Something went wrong");
       setIsLoading(false);

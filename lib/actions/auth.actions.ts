@@ -149,7 +149,6 @@ export async function continueWithGoogle(): Promise<AuthResult> {
     const result = await auth.api.signInSocial({
       body: {
         provider: "google",
-        callbackURL: "/dashboard",
       },
       headers: await getHeaders(),
     });
