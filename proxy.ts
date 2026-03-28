@@ -4,10 +4,8 @@ import { healthCheck } from "@/lib/prisma-health";
 
 const AUTH_PATH = ["/signin", "/signup"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-
-  console.log("run proxy");
 
   // Skip Next.js internals
   if (pathname.startsWith("/_next") || pathname.startsWith("/favicon.ico")) {
@@ -15,10 +13,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Optional DB health check
-  const dbHealthy = await healthCheck();
-  if (!dbHealthy) {
-    return new NextResponse("Service Unavailable", { status: 503 });
-  }
+  // const dbHealthy = await healthCheck();
+  // if (!dbHealthy) {
+  //   return new NextResponse("Service Unavailable", { status: 503 });
+  // }
 
   const sessionCookie =
     request.cookies.get("better-auth.session_token") ||
