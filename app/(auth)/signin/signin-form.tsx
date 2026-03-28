@@ -45,6 +45,7 @@ export default function SigninForm() {
           router.push(
             `/verify-account?email=${encodeURIComponent(formData.email)}`,
           );
+          return;
         }
         setIsError("Invalid Credentials");
       }
