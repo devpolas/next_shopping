@@ -13,11 +13,13 @@ import { FormRhfInput } from "@/components/rhf-input/form-rhf-input";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/spinner/loading-spinner";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type FormValues = z.infer<typeof userSigninSchema>;
 
 export default function SigninForm() {
+  const searchParams = useSearchParams();
+  const callbackURL = searchParams.get("callbackURL");
   const router = useRouter();
   const [isError, setIsError] = useState<string>("");
   const {
@@ -39,6 +41,8 @@ export default function SigninForm() {
       console.log(response);
       if (response.success) {
         toast.success("Logged in successfully 🎉");
+        await new Promise((resolve) => setTimeout(resolve, 200)); // small delay
+        router.push(callbackURL || "/");
       } else {
         if (response.redirectTo) {
           toast.error("Please verify your account");
