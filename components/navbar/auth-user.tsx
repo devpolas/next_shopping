@@ -37,8 +37,12 @@ function DropDownWithAuth({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost' size='icon' className='rounded-full'>
+      <DropdownMenuTrigger asChild className='flex justify-center items-center'>
+        <Button
+          variant='ghost'
+          size='icon'
+          className='flex justify-center items-center rounded-full'
+        >
           <Avatar>
             <AvatarImage
               className='rounded-full w-5 h-5'
