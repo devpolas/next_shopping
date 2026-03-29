@@ -43,7 +43,7 @@ function DropDownWithAuth({
           size='icon'
           className='flex justify-center items-center p-0 rounded-full'
         >
-          <Avatar className='w-8 h-8'>
+          <Avatar className='w-6 h-6'>
             <AvatarImage
               src={user?.image || undefined}
               alt={user?.name || "User"}
