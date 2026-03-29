@@ -98,7 +98,7 @@ export const auth = betterAuth({
     },
     customSyntheticUser: ({ coreFields, additionalFields, id }) => ({
       ...coreFields,
-      role: "user",
+      role: "USER",
       banned: false,
       banReason: null,
       banExpires: null,
