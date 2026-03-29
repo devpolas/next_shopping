@@ -37,18 +37,21 @@ function DropDownWithAuth({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className='flex justify-center items-center'>
+      <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
           size='icon'
-          className='flex justify-center items-center rounded-full'
+          className='flex justify-center items-center p-0 rounded-full'
         >
-          <Avatar>
+          <Avatar className='w-8 h-8'>
             <AvatarImage
-              className='rounded-full w-5 h-5'
-              src={`${user?.image}` || undefined}
+              src={user?.image || undefined}
+              alt={user?.name || "User"}
+              className='object-cover'
             />
-            <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
+            <AvatarFallback className='flex justify-center items-center'>
+              {getInitials(user?.name)}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
