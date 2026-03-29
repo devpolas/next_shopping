@@ -5,14 +5,15 @@ import AuthButton from "./auth-user";
 import Cart from "./cart";
 import Favorite from "./favorite";
 import { Search } from "./search";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ThemeSwitcher } from "../theme/theme-switcher";
+import Loading from "@/app/loading";
 
-export default function NavigationMenu() {
+function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <div className='relative flex flex-col px-4 md:px-8'>
+    <div className='relative flex flex-col bg-background px-4 md:px-8'>
       <div className='z-10 relative flex justify-between items-center gap-4 py-4'>
         <div className='flex flex-row items-center gap-4'>
           <Logo />
@@ -51,5 +52,13 @@ export default function NavigationMenu() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function NavigationMenu() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <Navigation />
+    </Suspense>
   );
 }
