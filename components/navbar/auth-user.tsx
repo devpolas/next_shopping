@@ -57,7 +57,7 @@ function DropDownWithAuth({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end' className='w-60'>
-        <div className='px-2 py-1.5 text-muted-foreground text-xs'>
+        <div className='px-2 py-1.5 text-muted-foreground text-xs text-center'>
           {user?.email}
         </div>
 
