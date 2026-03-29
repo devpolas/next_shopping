@@ -33,7 +33,7 @@ function DropDownWithAuth({
   handleSignout,
 }: {
   user: UserType;
-  handleSignout: () => void;
+  handleSignout: () => Promise<void>;
 }) {
   return (
     <DropdownMenu>
@@ -56,8 +56,8 @@ function DropDownWithAuth({
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align='end' className='w-48'>
-        <div className='px-2 py-1.5 text-muted-foreground text-sm'>
+      <DropdownMenuContent align='end' className='w-60'>
+        <div className='px-2 py-1.5 text-muted-foreground text-xs'>
           {user?.email}
         </div>
 
@@ -166,10 +166,12 @@ export default function AuthButton() {
   const session = authClient.useSession();
   const user = session.data?.user;
 
-  function handleSignout() {
-    signOut();
-    router.push("/signin");
-    router.refresh();
+  async function handleSignout() {
+    const res = await signOut();
+    if (res.success && res.redirectTo) {
+      router.push("/signin");
+      router.refresh();
+    }
   }
 
   if (session.isPending) return null; // or spinner

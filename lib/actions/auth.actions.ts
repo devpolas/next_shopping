@@ -176,10 +176,6 @@ export async function signOut(): Promise<AuthResult> {
       headers: await getHeaders(),
     });
 
-    if (res.success) {
-      redirect("/signin");
-    }
-
     return {
       success: true,
       message: "Logged out",
