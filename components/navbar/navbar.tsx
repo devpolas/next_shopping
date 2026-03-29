@@ -2,7 +2,7 @@ import NavigationMenu from "./navigation-menu";
 
 export default function Navbar() {
   return (
-    <nav className='bg-background w-full'>
+    <nav className='w-full'>
       <div>
         <NavigationMenu />
       </div>

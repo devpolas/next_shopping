@@ -13,7 +13,7 @@ export default function NavigationMenu() {
 
   return (
     <div className='relative flex flex-col px-4 md:px-8'>
-      <div className='z-10 relative flex justify-between items-center gap-4 shadow-md py-4'>
+      <div className='z-10 relative flex justify-between items-center gap-4 py-4'>
         <div className='flex flex-row items-center gap-4'>
           <Logo />
           <ThemeSwitcher />
