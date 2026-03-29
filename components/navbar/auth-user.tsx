@@ -27,7 +27,6 @@ import { signOut } from "@/lib/actions/auth.actions";
 import { getInitials } from "@/lib/get-initials";
 import { useRouter } from "next/navigation";
 import { UserType } from "@/types/user";
-import { useEffect } from "react";
 
 function DropDownWithAuth({
   user,
@@ -68,15 +67,39 @@ function DropDownWithAuth({
             </DropdownMenuItem>
           </Link>
 
-          <Link
-            href={"/history"}
-            className='hover:underline hover:cursor-pointer'
-          >
-            <DropdownMenuItem className='hover:cursor-pointer'>
-              <HistoryIcon className='mr-2 w-4 h-4' />
-              Purchase History
-            </DropdownMenuItem>
-          </Link>
+          {user?.role === "USER" && (
+            <Link
+              href={"/history"}
+              className='hover:underline hover:cursor-pointer'
+            >
+              <DropdownMenuItem className='hover:cursor-pointer'>
+                <HistoryIcon className='mr-2 w-4 h-4' />
+                Purchase History
+              </DropdownMenuItem>
+            </Link>
+          )}
+          {user?.role === "MODERATOR" && (
+            <Link
+              href={"/dashboard"}
+              className='hover:underline hover:cursor-pointer'
+            >
+              <DropdownMenuItem className='hover:cursor-pointer'>
+                <HistoryIcon className='mr-2 w-4 h-4' />
+                Dashboard
+              </DropdownMenuItem>
+            </Link>
+          )}
+          {user?.role === "ADMIN" && (
+            <Link
+              href={"/dashboard"}
+              className='hover:underline hover:cursor-pointer'
+            >
+              <DropdownMenuItem className='hover:cursor-pointer'>
+                <HistoryIcon className='mr-2 w-4 h-4' />
+                Dashboard
+              </DropdownMenuItem>
+            </Link>
+          )}
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
