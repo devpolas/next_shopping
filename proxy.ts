@@ -14,7 +14,7 @@ function safeRedirect(url: string) {
 export async function proxy(request: NextRequest) {
   const sessionUser = await session();
   const isAdminOrModerator =
-    sessionUser?.role === "ADMIN" || sessionUser?.role === "MODERATOR";
+    sessionUser?.role === "admin" || sessionUser?.role === "moderator";
   const { pathname, search } = request.nextUrl;
 
   if (

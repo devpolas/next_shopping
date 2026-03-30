@@ -1,7 +1,7 @@
 import { Cart, Order } from "./order";
 import { Review } from "./review";
 
-export type Role = "USER" | "MODERATOR" | "ADMIN";
+export type Role = "user" | "moderator" | "admin";
 
 export type UserType = {
   id: string;

@@ -14,9 +14,9 @@ datasource db {
 //////////////////////
 
 enum Role {
-  USER
-  MODERATOR
-  ADMIN
+  user
+  moderator
+  admin
 }
 
 enum Gender {
@@ -62,7 +62,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
-  role       Role      @default(USER)
+  role       Role      @default(user)
   banned     Boolean?  @default(false)
   banReason  String?
   banExpires DateTime?

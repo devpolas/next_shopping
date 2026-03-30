@@ -98,7 +98,7 @@ export const auth = betterAuth({
     },
     customSyntheticUser: ({ coreFields, additionalFields, id }) => ({
       ...coreFields,
-      role: "USER",
+      role: "user",
       banned: false,
       banReason: null,
       banExpires: null,
@@ -185,12 +185,6 @@ export const auth = betterAuth({
           throw new APIError("BAD_REQUEST", {
             message: "Email domain not allowed",
           });
-        }
-      }
-
-      if (ctx.path.includes("/signup") || ctx.path.includes("/signin")) {
-        if (ctx.body?.role) {
-          ctx.body.role = ctx.body.role.toUpperCase();
         }
       }
     }),

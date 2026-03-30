@@ -76,7 +76,7 @@ function DropDownWithAuth({
             </DropdownMenuItem>
           </Link>
 
-          {user?.role === "USER" && (
+          {user?.role === "user" && (
             <Link
               href={"/history"}
               className='hover:underline hover:cursor-pointer'
@@ -87,7 +87,7 @@ function DropDownWithAuth({
               </DropdownMenuItem>
             </Link>
           )}
-          {(user?.role === "MODERATOR" || user.role === "ADMIN") && (
+          {(user?.role === "moderator" || user.role === "admin") && (
             <Link
               href={"/dashboard"}
               className='hover:underline hover:cursor-pointer'
