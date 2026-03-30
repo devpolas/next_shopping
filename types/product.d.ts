@@ -1,4 +1,4 @@
-export type Gender = "MEN" | "WOMEN" | "UNISEX";
+export type Gender = "men" | "women" | "unisex";
 
 export interface Category {
   id: string;

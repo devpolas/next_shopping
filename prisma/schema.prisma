@@ -20,29 +20,30 @@ enum Role {
 }
 
 enum Gender {
-  MEN
-  WOMEN
-  UNISEX
+  men
+  women
+  unisex
 }
 
 enum OrderStatus {
-  PENDING
-  CONFIRMED
-  SHIPPED
-  DELIVERED
-  CANCELLED
+  pending
+  confirmed
+  shipped
+  delivered
+  returned
+  cancelled
 }
 
 enum PaymentMethod {
-  COD
-  STRIPE
-  SSL_COMMERZ
+  cod
+  stripe
+  ssl_commerz
 }
 
 enum PaymentStatus {
-  PENDING
-  SUCCESS
-  FAILED
+  pending
+  success
+  failed
 }
 
 
@@ -289,7 +290,7 @@ model Order {
   userId      String
 
   totalAmount Float
-  status      OrderStatus @default(PENDING)
+  status      OrderStatus @default(pending)
 
   address     String
   city        String
@@ -305,6 +306,13 @@ model Order {
   payment     Payment?
 
   @@map("orders")
+}
+
+model OrderStatusHistory {
+  id      String @id @default(uuid())
+  orderId String
+  status  OrderStatus
+  createdAt DateTime @default(now())
 }
 
 model OrderItem {

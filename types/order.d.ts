@@ -1,13 +1,13 @@
-export type PaymentMethod = "COD" | "STRIPE" | "SSL_COMMERZ";
+export type PaymentMethod = "cod" | "stripe" | "ssl_commerz";
 
-export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED";
+export type PaymentStatus = "pending" | "success" | "failed";
 
 export type OrderStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "SHIPPED"
-  | "DELIVERED"
-  | "CANCELLED";
+  | "pending"
+  | "confirmed"
+  | "shipped"
+  | "delivered"
+  | "canceled";
 
 export interface CartItem {
   id: string;
