@@ -15,20 +15,19 @@ import {
   LayoutDashboardIcon,
   ListIcon,
   ChartBarIcon,
-  FolderIcon,
-  UsersIcon,
-  CameraIcon,
-  FileTextIcon,
   Settings2Icon,
-  CircleHelpIcon,
   SearchIcon,
-  DatabaseIcon,
-  FileChartColumnIcon,
-  FileIcon,
+  MessageSquareHeart,
+  Gift,
+  CreditCard,
+  ShieldUser,
+  Users,
+  UserLock,
+  MessagesSquare,
 } from "lucide-react";
 import { TooltipProvider } from "../ui/tooltip";
 import { NavMain } from "./nav-main";
-import { NavDocuments } from "./nav-documents";
+import { NavDocuments } from "./nav-teams";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import Logo from "../logo/logo";
@@ -39,110 +38,67 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: <LayoutDashboardIcon />,
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Products",
+      url: "/dashboard/products",
       icon: <ListIcon />,
     },
     {
       title: "Analytics",
-      url: "#",
+      url: "/dashboard/analytics",
       icon: <ChartBarIcon />,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: <FolderIcon />,
+      title: "Orders",
+      url: "/dashboard/orders",
+      icon: <Gift />,
     },
     {
-      title: "Team",
-      url: "#",
-      icon: <UsersIcon />,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: <CameraIcon />,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      title: "Reviews",
+      url: "/dashboard/reviews",
+      icon: <MessageSquareHeart />,
     },
     {
-      title: "Proposal",
-      icon: <FileTextIcon />,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: <FileTextIcon />,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      title: "Payments",
+      url: "/dashboard/payments",
+      icon: <CreditCard />,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: <Settings2Icon />,
     },
     {
-      title: "Get Help",
-      url: "#",
-      icon: <CircleHelpIcon />,
+      title: "All Feedbacks",
+      url: "/dashboard/feedbacks",
+      icon: <MessagesSquare />,
     },
     {
       title: "Search",
-      url: "#",
+      url: "/dashboard/search",
       icon: <SearchIcon />,
     },
   ],
   documents: [
     {
-      name: "Data Library",
-      url: "#",
-      icon: <DatabaseIcon />,
+      title: "Admin Team",
+      url: "/dashboard/admin",
+      icon: <ShieldUser />,
     },
     {
-      name: "Reports",
-      url: "#",
-      icon: <FileChartColumnIcon />,
+      title: "Moderator Team",
+      url: "/dashboard/moderator",
+      icon: <UserLock />,
     },
     {
-      name: "Word Assistant",
-      url: "#",
-      icon: <FileIcon />,
+      title: "All Users",
+      url: "/dashboard/users",
+      icon: <Users />,
     },
   ],
 };

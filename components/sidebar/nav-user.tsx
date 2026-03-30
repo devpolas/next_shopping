@@ -25,7 +25,9 @@ import {
   CreditCardIcon,
   BellIcon,
   LogOutIcon,
+  Home,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function NavUser() {
@@ -95,20 +97,26 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => router.push("/profile")}
-                className='hover:cursor-pointer'
-              >
-                <CircleUserRoundIcon />
-                Account
+              <DropdownMenuItem asChild>
+                <Link href={"/"} className='hover:cursor-pointer'>
+                  <Home />
+                  Return to Home
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className='hover:cursor-pointer'>
-                <CreditCardIcon />
-                Billing
+              <DropdownMenuItem asChild>
+                <Link href={"/profile"} className='hover:cursor-pointer'>
+                  <CircleUserRoundIcon />
+                  Account
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className='hover:cursor-pointer'>
-                <BellIcon />
-                Notifications
+              <DropdownMenuItem asChild>
+                <Link
+                  href={"/dashboard/notifications"}
+                  className='hover:cursor-pointer'
+                >
+                  <BellIcon />
+                  Notifications
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
