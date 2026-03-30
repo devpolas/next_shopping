@@ -38,7 +38,6 @@ function DropDownWithAuth({
   handleSignout: () => Promise<void>;
 }) {
   const isAdminOrModerator = user.role === "admin" || user.role === "moderator";
-  const isUser = user.role === "user";
 
   return (
     <DropdownMenu>
@@ -79,7 +78,7 @@ function DropDownWithAuth({
             </DropdownMenuItem>
           </Link>
 
-          {isUser && (
+          {!isAdminOrModerator && (
             <Link
               href={"/history"}
               className='hover:underline hover:cursor-pointer'
