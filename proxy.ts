@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { session } from "./lib/actions/auth.actions";
 
 const AUTH_PATH = ["/signin", "/signup"];
+
+const PROTECTED_PATHS = ["/dashboard", "/profile"];
 
 function safeRedirect(url: string) {
   if (!url.startsWith("/")) return "/";
   return url;
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
+  const sessionUser = await session();
+  const isAdminOrModerator =
+    sessionUser?.role === "ADMIN" || sessionUser?.role === "MODERATOR";
   const { pathname, search } = request.nextUrl;
 
   if (
@@ -28,6 +34,12 @@ export function proxy(request: NextRequest) {
 
   if (isLoggedIn && AUTH_PATH.includes(pathname)) {
     return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  if (isLoggedIn && pathname.startsWith("/dashboard")) {
+    if (!isAdminOrModerator) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   }
 
   if (!isLoggedIn && !AUTH_PATH.includes(pathname)) {
