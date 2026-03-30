@@ -187,6 +187,12 @@ export const auth = betterAuth({
           });
         }
       }
+
+      if (ctx.path.includes("/signup") || ctx.path.includes("/signin")) {
+        if (ctx.body?.role) {
+          ctx.body.role = ctx.body.role.toUpperCase();
+        }
+      }
     }),
   },
 
