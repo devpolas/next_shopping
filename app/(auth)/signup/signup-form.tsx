@@ -4,7 +4,7 @@ import { Button } from "../../../components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { userSignupSchema } from "@/lib/validators/user-schema";
+import { userSignupSchema } from "@/lib/validators/auth-schema";
 import { toast } from "sonner";
 import { FormRhfInput } from "../../../components/rhf-input/form-rhf-input";
 import LoadingSpinner from "../../../components/spinner/loading-spinner";

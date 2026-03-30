@@ -4,6 +4,8 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  description?: string;
+  isActive: boolean;
 }
 
 export interface SubCategory {
@@ -11,11 +13,13 @@ export interface SubCategory {
   name: string;
   slug: string;
   categoryId: string;
+  isActive: boolean;
 }
 
 export interface Brand {
   id: string;
   name: string;
+  isActive: boolean;
 }
 
 export interface ProductVariant {

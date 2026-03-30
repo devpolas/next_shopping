@@ -134,6 +134,9 @@ model Category {
   id    String @id @default(uuid())
   name  String
   slug  String @unique
+  description   String?
+
+  isActive      Boolean @default(true)
 
   subCategories SubCategory[]
   products      Product[]
@@ -145,6 +148,7 @@ model SubCategory {
   name       String
   slug       String
   categoryId String
+  isActive      Boolean @default(true)
 
   category   Category @relation(fields: [categoryId], references: [id])
   products   Product[]
@@ -156,6 +160,7 @@ model SubCategory {
 model Brand {
   id   String @id @default(uuid())
   name String @unique
+  isActive      Boolean @default(true)
 
   products Product[]
   @@map("brands")

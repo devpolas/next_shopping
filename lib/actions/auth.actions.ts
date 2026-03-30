@@ -1,7 +1,7 @@
 "use server";
 
 import * as z from "zod";
-import { userSigninSchema, userSignupSchema } from "../validators/user-schema";
+import { userSigninSchema, userSignupSchema } from "../validators/auth-schema";
 import { auth } from "../auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
