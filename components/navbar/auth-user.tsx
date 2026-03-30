@@ -28,7 +28,7 @@ import { signOut } from "@/lib/actions/auth.actions";
 import { getInitials } from "@/lib/get-initials";
 import { useRouter } from "next/navigation";
 import { UserType } from "@/types/user";
-import Loading from "@/app/loading";
+import LoadingSpinner from "../spinner/loading-spinner";
 
 function DropDownWithAuth({
   user,
@@ -168,7 +168,7 @@ export default function AuthButton() {
   if (session.isPending)
     return (
       <>
-        <Loading />
+        <LoadingSpinner />
       </>
     );
   return user ? (
