@@ -7,7 +7,7 @@ import Favorite from "./favorite";
 import { Search } from "./search";
 import { Suspense, useState } from "react";
 import { ThemeSwitcher } from "../theme/theme-switcher";
-import Loading from "@/app/loading";
+import LoadingSpinner from "../spinner/loading-spinner";
 
 function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -57,7 +57,7 @@ function Navigation() {
 
 export default function NavigationMenu() {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<LoadingSpinner />}>
       <Navigation />
     </Suspense>
   );
