@@ -1,6 +1,5 @@
 "use client";
 
-import Loading from "@/app/loading";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -35,13 +34,6 @@ export function NavUser() {
 
   const session = authClient.useSession();
   const user = session.data?.user;
-
-  if (session.isPending)
-    return (
-      <>
-        <Loading />
-      </>
-    );
 
   if (!user) {
     return null;

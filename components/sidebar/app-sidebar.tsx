@@ -25,13 +25,15 @@ import {
   DatabaseIcon,
   FileChartColumnIcon,
   FileIcon,
-  CommandIcon,
 } from "lucide-react";
 import { TooltipProvider } from "../ui/tooltip";
 import { NavMain } from "./nav-main";
 import { NavDocuments } from "./nav-documents";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
+import Logo from "../logo/logo";
+import { authClient } from "@/lib/auth-client";
+import Loading from "@/app/loading";
 
 const data = {
   navMain: [
@@ -146,6 +148,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const session = authClient.useSession();
   return (
     <TooltipProvider>
       <Sidebar collapsible='offcanvas' {...props}>
@@ -156,18 +159,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 asChild
                 className='data-[slot=sidebar-menu-button]:p-1.5!'
               >
-                <a href='#'>
-                  <CommandIcon className='size-5!' />
-                  <span className='font-semibold text-base'>Acme Inc.</span>
-                </a>
+                <Logo />
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
-          <NavMain items={data.navMain} />
-          <NavDocuments items={data.documents} />
-          <NavSecondary items={data.navSecondary} className='mt-auto' />
+          {session.isPending ? (
+            <Loading />
+          ) : (
+            <>
+              <NavMain items={data.navMain} />
+              <NavDocuments items={data.documents} />
+              <NavSecondary items={data.navSecondary} className='mt-auto' />
+            </>
+          )}
         </SidebarContent>
         <SidebarFooter>
           <NavUser />
