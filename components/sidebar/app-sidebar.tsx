@@ -121,18 +121,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
-          {session.isPending ? (
-            <Loading />
-          ) : (
-            <>
-              <NavMain items={data.navMain} />
-              <NavDocuments items={data.documents} />
-              <NavSecondary items={data.navSecondary} className='mt-auto' />
-            </>
-          )}
+          <NavMain items={data.navMain} />
+          <NavDocuments items={data.documents} />
+          <NavSecondary items={data.navSecondary} className='mt-auto' />
         </SidebarContent>
         <SidebarFooter>
-          <NavUser />
+          {session.isPending ? <Loading /> : <NavUser />}
         </SidebarFooter>
       </Sidebar>
     </TooltipProvider>
