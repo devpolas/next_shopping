@@ -62,7 +62,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
-  role       String?
+  role       Role      @default(USER)
   banned     Boolean?  @default(false)
   banReason  String?
   banExpires DateTime?
