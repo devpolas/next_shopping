@@ -5,6 +5,7 @@ import {
   CircleUserRound,
   HistoryIcon,
   LogOutIcon,
+  ShieldCheck,
   UserKey,
   UserPlus,
 } from "lucide-react";
@@ -86,24 +87,13 @@ function DropDownWithAuth({
               </DropdownMenuItem>
             </Link>
           )}
-          {user?.role === "MODERATOR" && (
+          {(user?.role === "MODERATOR" || user.role === "ADMIN") && (
             <Link
               href={"/dashboard"}
               className='hover:underline hover:cursor-pointer'
             >
               <DropdownMenuItem className='hover:cursor-pointer'>
-                <HistoryIcon className='mr-2 w-4 h-4' />
-                Dashboard
-              </DropdownMenuItem>
-            </Link>
-          )}
-          {user?.role === "ADMIN" && (
-            <Link
-              href={"/dashboard"}
-              className='hover:underline hover:cursor-pointer'
-            >
-              <DropdownMenuItem className='hover:cursor-pointer'>
-                <HistoryIcon className='mr-2 w-4 h-4' />
+                <ShieldCheck className='mr-2 w-4 h-4' />
                 Dashboard
               </DropdownMenuItem>
             </Link>
