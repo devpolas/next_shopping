@@ -37,6 +37,9 @@ function DropDownWithAuth({
   user: UserType;
   handleSignout: () => Promise<void>;
 }) {
+  const isAdminOrModerator = user.role === "admin" || user.role === "moderator";
+  const isUser = user.role === "user";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -76,7 +79,7 @@ function DropDownWithAuth({
             </DropdownMenuItem>
           </Link>
 
-          {user?.role === "user" && (
+          {isUser && (
             <Link
               href={"/history"}
               className='hover:underline hover:cursor-pointer'
@@ -87,7 +90,7 @@ function DropDownWithAuth({
               </DropdownMenuItem>
             </Link>
           )}
-          {(user?.role === "moderator" || user.role === "admin") && (
+          {isAdminOrModerator && (
             <Link
               href={"/dashboard"}
               className='hover:underline hover:cursor-pointer'
