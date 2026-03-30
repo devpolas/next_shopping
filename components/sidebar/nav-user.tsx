@@ -57,12 +57,12 @@ export function NavUser() {
               size='lg'
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
-              <Avatar className='grayscale rounded-lg w-8 h-8'>
+              <Avatar className='grayscale rounded-full w-8 h-8'>
                 <AvatarImage
                   src={`${user.image}` || undefined}
                   alt={user.name}
                 />
-                <AvatarFallback className='rounded-lg'>
+                <AvatarFallback className='rounded-full'>
                   {getInitials(user.name)}
                 </AvatarFallback>
               </Avatar>
