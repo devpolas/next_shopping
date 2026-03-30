@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { forgotPassword } from "@/lib/actions/auth.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -20,6 +20,8 @@ type FormValues = z.infer<typeof forgetPasswordSchema>;
 
 export default function ForgetPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
   const {
     control,
     handleSubmit,
@@ -59,6 +61,7 @@ export default function ForgetPasswordForm() {
           name='email'
           label='Email'
           type='email'
+          defaultValue={email ?? undefined}
           control={control}
         />
         <Button

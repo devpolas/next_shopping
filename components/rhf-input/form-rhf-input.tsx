@@ -17,6 +17,7 @@ type FormRhfInputProps<T extends FieldValues> = {
   label: string;
   placeholder?: string;
   type: React.HTMLInputTypeAttribute;
+  defaultValue?: string;
 };
 
 export function FormRhfInput<T extends FieldValues>({
@@ -25,6 +26,7 @@ export function FormRhfInput<T extends FieldValues>({
   label,
   placeholder,
   type,
+  defaultValue = "",
 }: FormRhfInputProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -50,6 +52,7 @@ export function FormRhfInput<T extends FieldValues>({
                 aria-invalid={fieldState.invalid}
                 placeholder={placeholder}
                 autoComplete={String(name)}
+                defaultValue={defaultValue}
               />
 
               {isPassword && (

@@ -10,6 +10,7 @@ import { FormRhfInput } from "../../../components/rhf-input/form-rhf-input";
 import LoadingSpinner from "../../../components/spinner/loading-spinner";
 import { signup } from "@/lib/actions/auth.actions";
 import { useRouter } from "next/navigation";
+import { userExits } from "@/lib/actions/user.actions";
 
 type FormValues = z.infer<typeof userSignupSchema>;
 
@@ -35,10 +36,23 @@ export default function SignupForm() {
 
   async function handleSignup(formData: FormValues) {
     try {
+      const isUserExitsResponse = await userExits(formData.email);
+
+      if (isUserExitsResponse.success && isUserExitsResponse.user) {
+        toast.error("User with this email already exists");
+        await new Promise((resolve) => setTimeout(resolve, 200)); // small delay
+        router.push(
+          `/forget-password?email=${encodeURIComponent(formData.email)}`,
+        );
+      }
+
+      if (!isUserExitsResponse.success) {
+        toast.error("Something went wrong while checking user existence");
+        return;
+      }
+
       // simulate API
       const response = await signup(formData);
-
-      console.log(response);
 
       if (response.success) {
         toast.success("Account created successfully 🎉");
