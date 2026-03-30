@@ -44,6 +44,7 @@ export default function SignupForm() {
         router.push(
           `/forget-password?email=${encodeURIComponent(formData.email)}`,
         );
+        return;
       }
 
       if (!isUserExitsResponse.success) {
