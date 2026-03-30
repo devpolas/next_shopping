@@ -27,6 +27,7 @@ import { signOut } from "@/lib/actions/auth.actions";
 import { getInitials } from "@/lib/get-initials";
 import { useRouter } from "next/navigation";
 import { UserType } from "@/types/user";
+import Loading from "@/app/loading";
 
 function DropDownWithAuth({
   user,
@@ -112,7 +113,7 @@ function DropDownWithAuth({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          className='text-red-500 hover:cursor-pointer'
+          className='text-red-500 hover:text-muted hover:cursor-pointer'
           onClick={handleSignout}
         >
           <LogOutIcon className='mr-2 w-4 h-4' />
@@ -174,7 +175,12 @@ export default function AuthButton() {
     }
   }
 
-  if (session.isPending) return null; // or spinner
+  if (session.isPending)
+    return (
+      <>
+        <Loading />
+      </>
+    );
   return user ? (
     <DropDownWithAuth handleSignout={handleSignout} user={user} />
   ) : (
