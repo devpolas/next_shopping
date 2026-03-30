@@ -11,7 +11,7 @@ export type UserType = {
   image?: string | null;
   createdAt: Date;
   updatedAt: Date;
-  role: Role;
+  role?: Role;
   banned?: boolean | null;
   banReason?: string | null;
   banExpires?: Date;
