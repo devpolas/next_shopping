@@ -60,7 +60,8 @@ function VerifyEmailContent() {
       <CardHeader>
         <CardTitle>Verify Your Account</CardTitle>
         <CardDescription>
-          Click below to send a verification link to <strong>{email}</strong>.
+          We&apos;ve sent a verification email to <strong>{email}</strong>.
+          Didn&apos;t get it? Click below to resend the verification link
         </CardDescription>
       </CardHeader>
       <CardContent>
