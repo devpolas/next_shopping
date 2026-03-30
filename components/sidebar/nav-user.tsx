@@ -22,7 +22,6 @@ import { getInitials } from "@/lib/get-initials";
 import {
   EllipsisVerticalIcon,
   CircleUserRoundIcon,
-  CreditCardIcon,
   BellIcon,
   LogOutIcon,
   Home,
@@ -59,7 +58,10 @@ export function NavUser() {
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
               <Avatar className='grayscale rounded-lg w-8 h-8'>
-                <AvatarImage src={user.image || undefined} alt={user.name} />
+                <AvatarImage
+                  src={`${user.image}` || undefined}
+                  alt={user.name}
+                />
                 <AvatarFallback className='rounded-lg'>
                   {getInitials(user.name)}
                 </AvatarFallback>

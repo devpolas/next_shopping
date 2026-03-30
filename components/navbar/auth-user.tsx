@@ -47,14 +47,10 @@ function DropDownWithAuth({
           size='icon'
           className='flex justify-center items-center p-0 rounded-full'
         >
-          <Avatar className='w-6 h-6'>
-            <AvatarImage
-              src={user?.image || undefined}
-              alt={user?.name || "User"}
-              className='object-cover'
-            />
-            <AvatarFallback className='flex justify-center items-center'>
-              {getInitials(user?.name)}
+          <Avatar className='grayscale rounded-lg w-8 h-8'>
+            <AvatarImage src={`${user.image}` || undefined} alt={user.name} />
+            <AvatarFallback className='rounded-lg'>
+              {getInitials(user.name)}
             </AvatarFallback>
           </Avatar>
         </Button>
