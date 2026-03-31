@@ -52,7 +52,7 @@ export type BrandInput = z.input<typeof brandSchema>;
 // PRODUCT VARIANT
 //////////////////////
 export const productVariantSchema = z.object({
-  productId: z.string({ error: "Product is required" }),
+  id: z.string().optional(),
   size: z
     .string()
     .trim()
@@ -93,34 +93,66 @@ export const productSchema = z
       .number({ error: "Discount must be a number" })
       .positive({ error: "Discount must be positive" })
       .optional(),
-    gender: z.enum(["MEN", "WOMEN", "UNISEX"], { error: "Invalid gender" }),
+    gender: z.enum(["men", "women", "unisex"]),
     categoryId: z.string({ error: "Category is required" }),
     subCategoryId: z.string({ error: "Subcategory is required" }),
     brandId: z.string().optional(),
     images: z
-      .array(z.string({ error: "Invalid image URL" }))
-      .min(1, { error: "At least one image is required" }),
+      .array(
+        z.object({
+          id: z.string().optional(),
+          url: z.string({ error: "Image URL is required" }).trim(),
+        }),
+      )
+      .min(1, "At least one image is required"),
     isFeatured: z.boolean().default(false),
     isNew: z.boolean().default(true),
     isActive: z.boolean().default(true),
     variants: z
-      .array(productVariantSchema)
-      .min(1, { error: "At least one variant is required" }),
+      .array(
+        z.object({
+          id: z.string().optional(),
+          size: z
+            .string()
+            .trim()
+            .toLowerCase()
+            .min(1, "Size is required")
+            .max(20, "Size cannot exceed 20 characters"),
+          color: z
+            .string()
+            .trim()
+            .toLowerCase()
+            .min(3, "Color is required")
+            .max(30, "Color cannot exceed 30 characters"),
+          stock: z
+            .number()
+            .int()
+            .min(0, "Stock is required")
+            .max(100000, "Stock cannot exceed 100,000"),
+        }),
+      )
+      .min(1)
+      .max(100)
+      .refine(
+        (variants) =>
+          new Set(
+            variants.map(
+              (v) =>
+                `${v.size.trim().toLocaleLowerCase()}.-${v.color.trim().toLocaleLowerCase()}`,
+            ),
+          ).size === variants.length,
+        {
+          message: "Duplicate size/color variants are not allowed",
+          path: ["variants"],
+        },
+      ),
   })
   // Ensure discountPrice < price
-  .refine((data) => !data.discountPrice || data.discountPrice < data.price, {
-    message: "Discount price must be less than original price",
-    path: ["discountPrice"],
-  })
-  // Ensure no duplicate size-color combinations
   .refine(
-    (data) => {
-      const combinations = data.variants.map((v) => `${v.size}-${v.color}`);
-      return new Set(combinations).size === combinations.length;
-    },
+    (data) => data.discountPrice == null || data.discountPrice < data.price,
     {
-      message: "Duplicate size/color variants are not allowed",
-      path: ["variants"],
+      message: "Discount price must be less than original price",
+      path: ["discountPrice"],
     },
   );
 

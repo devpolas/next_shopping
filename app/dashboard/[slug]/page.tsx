@@ -1,3 +1,4 @@
+import CreateProduct from "@/components/product/create-product";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SiteHeader } from "@/components/sidebar/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -9,6 +10,9 @@ export default async function page({
 }) {
   const paramsResolved = await params;
   const slug = paramsResolved.slug;
+
+  const isCreateProductPage = slug === "create-product";
+
   return (
     <SidebarProvider
       style={
@@ -19,16 +23,18 @@ export default async function page({
       }
     >
       <AppSidebar variant='inset' />
-      <SidebarInset>
-        <SiteHeader />
-        <div className='flex flex-col flex-1'>
-          <div className='@container/main flex flex-col flex-1 gap-2'>
-            <div className='flex flex-col gap-4 md:gap-6 py-4 md:py-6'>
-              {slug}
+      {isCreateProductPage && (
+        <SidebarInset>
+          <SiteHeader />
+          <div className='flex flex-col flex-1'>
+            <div className='@container/main flex flex-col flex-1 gap-2'>
+              <div className='flex flex-col gap-4 md:gap-6 py-4 md:py-6'>
+                <CreateProduct />
+              </div>
             </div>
           </div>
-        </div>
-      </SidebarInset>
+        </SidebarInset>
+      )}
     </SidebarProvider>
   );
 }
