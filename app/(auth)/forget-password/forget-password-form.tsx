@@ -29,7 +29,7 @@ export default function ForgetPasswordForm() {
   } = useForm<FormValues>({
     resolver: zodResolver(forgetPasswordSchema),
     defaultValues: {
-      email: "",
+      email: email || "",
     },
   });
 
@@ -61,7 +61,6 @@ export default function ForgetPasswordForm() {
           name='email'
           label='Email'
           type='email'
-          defaultValue={email ?? undefined}
           control={control}
         />
         <Button
