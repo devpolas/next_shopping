@@ -68,7 +68,7 @@ export function FormRhfSelect<T extends FieldValues>({
             </div>
 
             <Select
-              value={field.value}
+              value={field.value ?? ""}
               onValueChange={field.onChange}
               disabled={disabled}
             >

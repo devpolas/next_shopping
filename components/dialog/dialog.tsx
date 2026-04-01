@@ -48,7 +48,7 @@ export function ReusableDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className={sizeClasses[size]}>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className='space-y-4'>
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
             {dialogDescription && (
@@ -58,7 +58,7 @@ export function ReusableDialog({
 
           <FieldGroup>{children}</FieldGroup>
 
-          <DialogFooter className='flex gap-2 mt-4'>
+          <DialogFooter className='flex flex-row gap-2'>
             <DialogClose asChild>
               <Button type='button' variant='outline'>
                 {cancelText}

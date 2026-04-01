@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { X } from "lucide-react";
+import { PlusCircle, X } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 import Loading from "@/app/loading";
@@ -27,37 +27,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Badge } from "../ui/badge";
 
 // ---------------- Zod Schema ----------------
 export const productSchema = z.object({
   name: z.string().trim().min(3).max(100),
   description: z.string().trim().min(10).max(1000),
-  price: z.number({ error: "Price must be a number" }).positive(),
+  price: z.number().positive(),
   discountPrice: z.number().positive().optional(),
   gender: z.enum(["men", "women", "unisex"]),
   categoryId: z.string().min(1),
   subCategoryId: z.string().min(1),
   brandId: z.string().optional(),
   images: z
-    .array(
-      z.object({
-        file: z.instanceof(File),
-        url: z.string(),
-      }),
-    )
-    .min(1),
+    .array(z.object({ file: z.instanceof(File), url: z.string() }))
+    .min(1, "At least one image is required"),
   isFeatured: z.enum(["true", "false"]),
   isNew: z.enum(["true", "false"]),
   isActive: z.enum(["true", "false"]),
   stock: z.number().positive(),
   size: z.string(),
   color: z.string(),
+  variants: z
+    .array(
+      z.object({
+        size: z.string().min(1, "Size is required"),
+        color: z.string().min(1, "Color is required"),
+        stock: z.number().min(0, "Stock cannot be negative"),
+      }),
+    )
+    .min(1, "At least one variant is required"),
 });
 
 export type ProductInput = z.infer<typeof productSchema>;
 
 // ---------------- Static Data ----------------
-const productData = {
+const productOptions = {
   gender: [
     { label: "Men", value: "men" },
     { label: "Women", value: "women" },
@@ -93,28 +98,21 @@ const productData = {
 export default function CreateProduct() {
   const [mounted, setMounted] = useState(false);
   const session = authClient.useSession();
+
+  // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogIdentifier, setDialogIdentifier] = useState("");
+  const [dialogType, setDialogType] = useState<
+    "brand" | "category" | "subCategory" | ""
+  >("");
   const [brandName, setBrandName] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [subcategoryName, setSubcategoryName] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    "",
+  ); // explicitly a string
 
-  type DialogType = "brand" | "category" | "subCategory";
-
-  const dialogConfig: Record<
-    DialogType,
-    {
-      title: string;
-      description: string;
-      value: string;
-      setValue: React.Dispatch<React.SetStateAction<string>>;
-      submitText: string;
-      submittingText: string;
-      label: string;
-      placeholder: string;
-    }
-  > = {
+  // ---------------- Dialog Config ----------------
+  const dialogConfig = {
     brand: {
       title: "Create New Brand",
       description:
@@ -150,7 +148,9 @@ export default function CreateProduct() {
     },
   };
 
+  // ---------------- React Hook Form ----------------
   const {
+    register,
     control,
     handleSubmit,
     watch,
@@ -170,19 +170,26 @@ export default function CreateProduct() {
       isNew: undefined,
       isActive: undefined,
       images: [],
+      variants: [{ size: "", color: "", stock: 0 }],
     },
   });
 
-  const imagesFieldArray = useFieldArray({
+  const imagesFieldArray = useFieldArray({ control, name: "images" });
+  const {
+    fields: variantFields,
+    append: appendVariant,
+    remove: removeVariant,
+  } = useFieldArray({
     control,
-    name: "images",
+    name: "variants",
   });
 
   const price = watch("price");
   const discountPrice = watch("discountPrice");
   const images = watch("images");
+  const variants = watch("variants");
 
-  // ---------------- Image Handlers ----------------
+  // ---------------- Handlers ----------------
   const handleImageChange = (files: FileList | null) => {
     if (!files) return;
     const remaining = 5 - images.length;
@@ -198,29 +205,27 @@ export default function CreateProduct() {
     imagesFieldArray.remove(index);
   };
 
-  // ---------------- Dialog Handlers ----------------
-  const handleDialog = (id: string) => {
-    setDialogIdentifier(id);
+  const openDialog = (type: "brand" | "category" | "subCategory") => {
+    setDialogType(type);
+    setSelectedCategory("");
     setIsDialogOpen(true);
   };
 
-  const handleDialogChange = () => {
-    setDialogIdentifier("");
+  const closeDialog = () => {
+    setDialogType("");
     setIsDialogOpen(false);
   };
 
-  const handleDynamicSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleDialogSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!dialogIdentifier) return;
-    const currentDialog = dialogConfig[dialogIdentifier as DialogType];
-    if (!currentDialog.value.trim()) return;
-    console.log(selectedCategory);
-    console.log(dialogIdentifier, ":", currentDialog.value);
-    currentDialog.setValue("");
-    handleDialogChange();
+    if (!dialogType) return;
+    const config = dialogConfig[dialogType];
+    if (!config.value.trim()) return;
+    console.log(dialogType, ":", config.value);
+    config.setValue("");
+    closeDialog();
   };
 
-  // ---------------- Form Submit ----------------
   const onSubmit = async (data: ProductInput) => {
     console.log("Submitting Product:", data);
     alert("Product submitted! Check console for data.");
@@ -229,10 +234,9 @@ export default function CreateProduct() {
   useEffect(() => setMounted(true), []);
   if (!mounted || session.isPending) return <Loading />;
 
-  const currentDialog = dialogIdentifier
-    ? dialogConfig[dialogIdentifier as DialogType]
-    : null;
+  const currentDialog = dialogType ? dialogConfig[dialogType] : null;
 
+  // ---------------- JSX ----------------
   return (
     <>
       {!isDialogOpen && (
@@ -244,7 +248,9 @@ export default function CreateProduct() {
             text='Create New Product'
             className='mb-8 text-muted-foreground'
           />
+
           <div className='flex flex-col gap-6'>
+            {/* ---------------- Product Info ---------------- */}
             <div className='flex lg:flex-row flex-col gap-6'>
               {/* Left Column */}
               <div className='flex flex-col flex-1 gap-6'>
@@ -257,15 +263,15 @@ export default function CreateProduct() {
                 />
                 <FormRhfInput
                   name='price'
-                  control={control}
                   type='number'
+                  control={control}
                   label='Price'
                   placeholder='Enter price'
                 />
                 <FormRhfInput
                   name='discountPrice'
-                  control={control}
                   type='number'
+                  control={control}
                   label='Discount Price'
                   placeholder='Enter discount price'
                 />
@@ -274,41 +280,75 @@ export default function CreateProduct() {
                     Discount must be less than price
                   </p>
                 )}
-                <FormRhfInput
-                  name='stock'
-                  control={control}
-                  type='number'
-                  label='Stock'
-                  placeholder='Enter stock amount'
-                />
                 <FormRhfSelect
                   control={control}
                   name='gender'
                   label='Gender'
-                  options={productData.gender}
+                  options={productOptions.gender}
                   placeholder='Select Gender'
                 />
                 <FormRhfSelect
                   control={control}
                   name='isFeatured'
                   label='Featured'
-                  options={productData.isFeatured}
+                  options={productOptions.isFeatured}
                   placeholder='Featured?'
                 />
                 <FormRhfSelect
                   control={control}
                   name='isNew'
                   label='New'
-                  options={productData.isNew}
+                  options={productOptions.isNew}
                   placeholder='New?'
                 />
                 <FormRhfSelect
                   control={control}
                   name='isActive'
                   label='Active'
-                  options={productData.isActive}
+                  options={productOptions.isActive}
                   placeholder='Active?'
                 />
+
+                {/* ---------------- Variants ---------------- */}
+                <div className='flex flex-col gap-4'>
+                  <div className='flex flex-row items-center gap-2'>
+                    <h4 className='font-semibold'>Product Variants</h4>
+                    <Badge
+                      className='hover:cursor-pointer'
+                      onClick={() =>
+                        appendVariant({ size: "", color: "", stock: 0 })
+                      }
+                    >
+                      <PlusCircle /> Create New Variant
+                    </Badge>
+                  </div>
+                  {variantFields.map((field, index) => (
+                    <div key={field.id} className='flex items-end gap-4'>
+                      <Input
+                        {...register(`variants.${index}.size`)}
+                        placeholder='Size'
+                      />
+                      <Input
+                        {...register(`variants.${index}.color`)}
+                        placeholder='Color'
+                      />
+                      <Input
+                        type='number'
+                        {...register(`variants.${index}.stock`, {
+                          valueAsNumber: true,
+                        })}
+                        placeholder='Stock'
+                      />
+                      <Button
+                        variant='destructive'
+                        type='button'
+                        onClick={() => removeVariant(index)}
+                      >
+                        <X />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Right Column */}
@@ -317,28 +357,28 @@ export default function CreateProduct() {
                   control={control}
                   name='brandId'
                   label='Brand'
-                  options={productData.brand}
+                  options={productOptions.brand}
                   placeholder='Select Brand'
                   createNew
-                  onCreateNew={() => handleDialog("brand")}
+                  onCreateNew={() => openDialog("brand")}
                 />
                 <FormRhfSelect
                   control={control}
                   name='categoryId'
                   label='Category'
-                  options={productData.category}
+                  options={productOptions.category}
                   placeholder='Select Category'
                   createNew
-                  onCreateNew={() => handleDialog("category")}
+                  onCreateNew={() => openDialog("category")}
                 />
                 <FormRhfSelect
                   control={control}
                   name='subCategoryId'
                   label='Subcategory'
-                  options={productData.subCategory}
+                  options={productOptions.subCategory}
                   placeholder='Select Subcategory'
                   createNew
-                  onCreateNew={() => handleDialog("subCategory")}
+                  onCreateNew={() => openDialog("subCategory")}
                 />
                 <FormRhfTextarea
                   control={control}
@@ -348,6 +388,7 @@ export default function CreateProduct() {
                   height={125}
                 />
 
+                {/* ---------------- Images ---------------- */}
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor='product-images'>
@@ -363,7 +404,6 @@ export default function CreateProduct() {
                     {errors.images && <FieldError errors={[errors.images]} />}
                   </Field>
                 </FieldGroup>
-
                 <div className='flex flex-wrap gap-2 mt-2'>
                   {images.map((img, index) => (
                     <div
@@ -389,6 +429,7 @@ export default function CreateProduct() {
               </div>
             </div>
 
+            {/* ---------------- Submit ---------------- */}
             <Button type='submit' disabled={isSubmitting}>
               {isSubmitting ? (
                 <LoadingSpinner text='Creating...' />
@@ -400,22 +441,23 @@ export default function CreateProduct() {
         </form>
       )}
 
+      {/* ---------------- Dialog ---------------- */}
       {isDialogOpen && currentDialog && (
         <ReusableDialog
           dialogTitle={currentDialog.title}
           dialogDescription={currentDialog.description}
           isOpen={isDialogOpen}
-          onOpenChange={handleDialogChange}
+          onOpenChange={closeDialog}
           submitText={currentDialog.submitText}
           cancelText='Close'
-          onSubmit={handleDynamicSubmit}
+          onSubmit={handleDialogSubmit}
           isSubmittingText={currentDialog.submittingText}
         >
-          {dialogIdentifier === "subCategory" && (
+          {dialogType === "subCategory" && (
             <Field>
               <Label>Select Category</Label>
               <Select
-                value={selectedCategory}
+                value={selectedCategory ?? ""}
                 onValueChange={setSelectedCategory}
               >
                 <SelectTrigger>
@@ -423,7 +465,7 @@ export default function CreateProduct() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {productData.category.map((option, i) => (
+                    {productOptions.category.map((option, i) => (
                       <SelectItem key={i} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -433,7 +475,6 @@ export default function CreateProduct() {
               </Select>
             </Field>
           )}
-
           <Field>
             <Label>{currentDialog.label}</Label>
             <Input
