@@ -32,7 +32,7 @@ import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import Logo from "../logo/logo";
 import { authClient } from "@/lib/auth-client";
-import Loading from "@/app/loading";
+import LoadingSpinner from "../spinner/loading-spinner";
 
 const data = {
   navMain: [
@@ -126,7 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavSecondary items={data.navSecondary} className='mt-auto' />
         </SidebarContent>
         <SidebarFooter>
-          {session.isPending ? <Loading /> : <NavUser />}
+          {session.isPending ? <LoadingSpinner /> : <NavUser />}
         </SidebarFooter>
       </Sidebar>
     </TooltipProvider>
