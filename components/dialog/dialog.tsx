@@ -1,4 +1,6 @@
-import { Button } from "@/components/ui/button";
+"use client";
+import LoadingSpinner from "../spinner/loading-spinner";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogClose,
@@ -7,9 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { FieldGroup } from "@/components/ui/field";
-import LoadingSpinner from "../spinner/loading-spinner";
+} from "../ui/dialog";
+import { FieldGroup } from "../ui/field";
 
 interface DialogProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ interface DialogProps {
   submitText: string;
   cancelText: string;
   children: React.ReactNode;
-  size?: "sm" | "md" | "lg"; // optional size
+  size?: "sm" | "md" | "lg";
 }
 
 export function ReusableDialog({
@@ -31,7 +32,7 @@ export function ReusableDialog({
   dialogTitle,
   dialogDescription,
   onSubmit,
-  isSubmitting,
+  isSubmitting = false,
   isSubmittingText,
   submitText,
   cancelText,
@@ -46,8 +47,8 @@ export function ReusableDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <form onSubmit={onSubmit}>
-        <DialogContent className={sizeClasses[size]}>
+      <DialogContent className={sizeClasses[size]}>
+        <form onSubmit={onSubmit}>
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
             {dialogDescription && (
@@ -57,11 +58,14 @@ export function ReusableDialog({
 
           <FieldGroup>{children}</FieldGroup>
 
-          <DialogFooter className='flex gap-2'>
+          <DialogFooter className='flex gap-2 mt-4'>
             <DialogClose asChild>
-              <Button variant='outline'>{cancelText}</Button>
+              <Button type='button' variant='outline'>
+                {cancelText}
+              </Button>
             </DialogClose>
-            <Button type='submit'>
+
+            <Button type='submit' disabled={isSubmitting}>
               {isSubmitting ? (
                 <LoadingSpinner text={isSubmittingText} />
               ) : (
@@ -69,8 +73,8 @@ export function ReusableDialog({
               )}
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }

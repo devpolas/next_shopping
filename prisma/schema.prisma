@@ -134,8 +134,8 @@ model Verification {
 
 model Category {
   id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique
+  name        String   @unique
+  slug        String   
   description String?
   isActive    Boolean  @default(true)
 

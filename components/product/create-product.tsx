@@ -19,49 +19,44 @@ import FormRhfTextarea from "../rhf-input/form-rfh-textarea";
 import LoadingSpinner from "../spinner/loading-spinner";
 import { ReusableDialog } from "../dialog/dialog";
 import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
+// ---------------- Zod Schema ----------------
 export const productSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(3, { message: "Product name must be at least 3 characters" })
-    .max(100, { message: "Product name cannot exceed 100 characters" }),
-  description: z
-    .string()
-    .trim()
-    .min(10, { message: "Description must be at least 10 characters" })
-    .max(1000, { message: "Description cannot exceed 1000 characters" }),
-  price: z
-    .number({ error: "Price must be a number" })
-    .positive({ message: "Price must be positive" }),
-  discountPrice: z
-    .number({ error: "Discount must be a number" })
-    .positive({ message: "Discount must be positive" })
-    .optional(),
+  name: z.string().trim().min(3).max(100),
+  description: z.string().trim().min(10).max(1000),
+  price: z.number({ error: "Price must be a number" }).positive(),
+  discountPrice: z.number().positive().optional(),
   gender: z.enum(["men", "women", "unisex"]),
-  categoryId: z.string().min(1, { message: "Category is required" }),
-  subCategoryId: z.string().min(1, { message: "Subcategory is required" }),
+  categoryId: z.string().min(1),
+  subCategoryId: z.string().min(1),
   brandId: z.string().optional(),
   images: z
     .array(
       z.object({
-        file: z.instanceof(File, { message: "File is required" }),
+        file: z.instanceof(File),
         url: z.string(),
       }),
     )
-    .min(1, { message: "At least one image is required" }),
+    .min(1),
   isFeatured: z.enum(["true", "false"]),
   isNew: z.enum(["true", "false"]),
   isActive: z.enum(["true", "false"]),
-  stock: z
-    .number({ error: "Stock is required" })
-    .positive({ error: "Stock must be positive" }),
-  size: z.string({ error: "Size is required" }),
-  color: z.string({ error: "Color is required" }),
+  stock: z.number().positive(),
+  size: z.string(),
+  color: z.string(),
 });
 
 export type ProductInput = z.infer<typeof productSchema>;
 
+// ---------------- Static Data ----------------
 const productData = {
   gender: [
     { label: "Men", value: "men" },
@@ -94,11 +89,66 @@ const productData = {
   ],
 };
 
+// ---------------- Component ----------------
 export default function CreateProduct() {
   const [mounted, setMounted] = useState(false);
   const session = authClient.useSession();
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [dialogIdentifier, setDialogIdentifier] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogIdentifier, setDialogIdentifier] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [categoryName, setCategoryName] = useState("");
+  const [subcategoryName, setSubcategoryName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  type DialogType = "brand" | "category" | "subCategory";
+
+  const dialogConfig: Record<
+    DialogType,
+    {
+      title: string;
+      description: string;
+      value: string;
+      setValue: React.Dispatch<React.SetStateAction<string>>;
+      submitText: string;
+      submittingText: string;
+      label: string;
+      placeholder: string;
+    }
+  > = {
+    brand: {
+      title: "Create New Brand",
+      description:
+        "Brand must offer high-quality products designed with style, comfort, and durability.",
+      value: brandName,
+      setValue: setBrandName,
+      submitText: "Create Brand",
+      submittingText: "Branding...",
+      label: "Brand Name",
+      placeholder: "Enter Brand Name",
+    },
+    category: {
+      title: "Create New Category",
+      description:
+        "Define a category to keep your catalog structured and easy to navigate.",
+      value: categoryName,
+      setValue: setCategoryName,
+      submitText: "Create Category",
+      submittingText: "Categorizing...",
+      label: "Category Name",
+      placeholder: "Enter Category Name",
+    },
+    subCategory: {
+      title: "Create New Subcategory",
+      description:
+        "Define a subcategory to group products under a parent category.",
+      value: subcategoryName,
+      setValue: setSubcategoryName,
+      submitText: "Create Subcategory",
+      submittingText: "SubCategorizing...",
+      label: "Subcategory Name",
+      placeholder: "Enter Subcategory Name",
+    },
+  };
 
   const {
     control,
@@ -130,47 +180,58 @@ export default function CreateProduct() {
 
   const price = watch("price");
   const discountPrice = watch("discountPrice");
-
-  // ------------------- Watch Images for Reactive UI -------------------
   const images = watch("images");
 
-  // ------------------- Handle Image Upload -------------------
+  // ---------------- Image Handlers ----------------
   const handleImageChange = (files: FileList | null) => {
     if (!files) return;
-
-    const remainingSlots = 5 - images.length;
-    const fileArray = Array.from(files).slice(0, remainingSlots);
-
-    fileArray.forEach((file) => {
-      imagesFieldArray.append({
-        file,
-        url: URL.createObjectURL(file),
-      });
-    });
+    const remaining = 5 - images.length;
+    Array.from(files)
+      .slice(0, remaining)
+      .forEach((file) =>
+        imagesFieldArray.append({ file, url: URL.createObjectURL(file) }),
+      );
   };
 
-  // ------------------- Remove Image -------------------
   const removeImage = (index: number) => {
     URL.revokeObjectURL(images[index].url);
     imagesFieldArray.remove(index);
   };
 
-  // ------------------- handle dialog -------------------
-  function handleDialog(id: string) {
+  // ---------------- Dialog Handlers ----------------
+  const handleDialog = (id: string) => {
     setDialogIdentifier(id);
-    setIsDialogOpen((pre) => !pre);
-  }
+    setIsDialogOpen(true);
+  };
 
-  // ------------------- Submit Form-------------------
+  const handleDialogChange = () => {
+    setDialogIdentifier("");
+    setIsDialogOpen(false);
+  };
+
+  const handleDynamicSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!dialogIdentifier) return;
+    const currentDialog = dialogConfig[dialogIdentifier as DialogType];
+    if (!currentDialog.value.trim()) return;
+    console.log(selectedCategory);
+    console.log(dialogIdentifier, ":", currentDialog.value);
+    currentDialog.setValue("");
+    handleDialogChange();
+  };
+
+  // ---------------- Form Submit ----------------
   const onSubmit = async (data: ProductInput) => {
     console.log("Submitting Product:", data);
-    // TODO: Replace with API call
     alert("Product submitted! Check console for data.");
   };
 
   useEffect(() => setMounted(true), []);
-
   if (!mounted || session.isPending) return <Loading />;
+
+  const currentDialog = dialogIdentifier
+    ? dialogConfig[dialogIdentifier as DialogType]
+    : null;
 
   return (
     <>
@@ -183,10 +244,9 @@ export default function CreateProduct() {
             text='Create New Product'
             className='mb-8 text-muted-foreground'
           />
-
           <div className='flex flex-col gap-6'>
             <div className='flex lg:flex-row flex-col gap-6'>
-              {/* ---------------- Left Column ---------------- */}
+              {/* Left Column */}
               <div className='flex flex-col flex-1 gap-6'>
                 <FormRhfInput
                   name='name'
@@ -209,14 +269,11 @@ export default function CreateProduct() {
                   label='Discount Price'
                   placeholder='Enter discount price'
                 />
-
                 {discountPrice && discountPrice >= price && (
                   <p className='text-red-500 text-sm'>
-                    {" "}
-                    Discount must be less than price{" "}
+                    Discount must be less than price
                   </p>
                 )}
-
                 <FormRhfInput
                   name='stock'
                   control={control}
@@ -224,7 +281,6 @@ export default function CreateProduct() {
                   label='Stock'
                   placeholder='Enter stock amount'
                 />
-
                 <FormRhfSelect
                   control={control}
                   name='gender'
@@ -255,7 +311,7 @@ export default function CreateProduct() {
                 />
               </div>
 
-              {/* ---------------- Right Column ---------------- */}
+              {/* Right Column */}
               <div className='flex flex-col flex-1 gap-6'>
                 <FormRhfSelect
                   control={control}
@@ -263,30 +319,27 @@ export default function CreateProduct() {
                   label='Brand'
                   options={productData.brand}
                   placeholder='Select Brand'
-                  onCreateNew={() => handleDialog("brand")}
                   createNew
+                  onCreateNew={() => handleDialog("brand")}
                 />
-
                 <FormRhfSelect
                   control={control}
                   name='categoryId'
                   label='Category'
                   options={productData.category}
                   placeholder='Select Category'
-                  onCreateNew={() => handleDialog("category")}
                   createNew
+                  onCreateNew={() => handleDialog("category")}
                 />
-
                 <FormRhfSelect
                   control={control}
                   name='subCategoryId'
                   label='Subcategory'
                   options={productData.subCategory}
                   placeholder='Select Subcategory'
-                  onCreateNew={() => handleDialog("subCategory")}
                   createNew
+                  onCreateNew={() => handleDialog("subCategory")}
                 />
-
                 <FormRhfTextarea
                   control={control}
                   name='description'
@@ -295,7 +348,6 @@ export default function CreateProduct() {
                   height={125}
                 />
 
-                {/* ---------------- Images ---------------- */}
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor='product-images'>
@@ -311,10 +363,11 @@ export default function CreateProduct() {
                     {errors.images && <FieldError errors={[errors.images]} />}
                   </Field>
                 </FieldGroup>
+
                 <div className='flex flex-wrap gap-2 mt-2'>
                   {images.map((img, index) => (
                     <div
-                      key={img.url} // use url as key for consistent updates
+                      key={img.url}
                       className='relative rounded-lg w-12 lg:w-14 h-12 lg:h-14 overflow-hidden'
                     >
                       <Image
@@ -336,7 +389,6 @@ export default function CreateProduct() {
               </div>
             </div>
 
-            {/* ---------------- Submit ---------------- */}
             <Button type='submit' disabled={isSubmitting}>
               {isSubmitting ? (
                 <LoadingSpinner text='Creating...' />
@@ -348,55 +400,49 @@ export default function CreateProduct() {
         </form>
       )}
 
-      {dialogIdentifier === "brand" && isDialogOpen && (
+      {isDialogOpen && currentDialog && (
         <ReusableDialog
-          dialogTitle='Create New Brand'
-          dialogDescription='Brand must offers high-quality products designed with a focus on style, comfort, and durability. It aims to meet customer needs through reliable craftsmanship and modern design.'
+          dialogTitle={currentDialog.title}
+          dialogDescription={currentDialog.description}
           isOpen={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          submitText='Create Brand'
+          onOpenChange={handleDialogChange}
+          submitText={currentDialog.submitText}
           cancelText='Close'
-          isSubmittingText='Branding...'
+          onSubmit={handleDynamicSubmit}
+          isSubmittingText={currentDialog.submittingText}
         >
+          {dialogIdentifier === "subCategory" && (
+            <Field>
+              <Label>Select Category</Label>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder='Select Category' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {productData.category.map((option, i) => (
+                      <SelectItem key={i} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+
           <Field>
-            <Label>Brand Name</Label>
-            <Input type='text' />
-          </Field>
-        </ReusableDialog>
-      )}
-      {dialogIdentifier === "category" && isDialogOpen && (
-        <ReusableDialog
-          dialogTitle='Create New Category'
-          dialogDescription='Define a new product category to keep your catalog structured and easy to navigate. Categories help customers quickly find what they are looking for.'
-          isOpen={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          submitText='Create Category'
-          cancelText='Close'
-          isSubmittingText='Categorizing...'
-        >
-          <Field>
-            <Label>Category Name</Label>
-          </Field>
-          <Field>
-            <Input type='text' />
-          </Field>
-        </ReusableDialog>
-      )}
-      {dialogIdentifier === "subCategory" && isDialogOpen && (
-        <ReusableDialog
-          dialogTitle='Create New Subcategory'
-          dialogDescription='Define a subcategory to group related products under a main category, making your catalog more structured and user-friendly.'
-          isOpen={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          submitText='Create Subcategory'
-          cancelText='Close'
-          isSubmittingText='SubCategorizing...'
-        >
-          <Field>
-            <Label>Subcategory Name</Label>
-          </Field>
-          <Field>
-            <Input type='text' />
+            <Label>{currentDialog.label}</Label>
+            <Input
+              required
+              type='text'
+              placeholder={currentDialog.placeholder}
+              value={currentDialog.value}
+              onChange={(e) => currentDialog.setValue(e.target.value)}
+            />
           </Field>
         </ReusableDialog>
       )}
