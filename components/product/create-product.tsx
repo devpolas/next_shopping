@@ -45,9 +45,6 @@ export const productSchema = z.object({
   isFeatured: z.enum(["true", "false"]),
   isNew: z.enum(["true", "false"]),
   isActive: z.enum(["true", "false"]),
-  stock: z.number().positive(),
-  size: z.string(),
-  color: z.string(),
   variants: z
     .array(
       z.object({
@@ -187,7 +184,6 @@ export default function CreateProduct() {
   const price = watch("price");
   const discountPrice = watch("discountPrice");
   const images = watch("images");
-  const variants = watch("variants");
 
   // ---------------- Handlers ----------------
   const handleImageChange = (files: FileList | null) => {
@@ -242,7 +238,7 @@ export default function CreateProduct() {
       {!isDialogOpen && (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='mx-auto w-full 2xl:w-6xl'
+          className='mx-auto 2xl:p-0 px-8 w-full 2xl:w-6xl'
         >
           <Heading3
             text='Create New Product'
@@ -325,18 +321,18 @@ export default function CreateProduct() {
                   {variantFields.map((field, index) => (
                     <div key={field.id} className='flex items-end gap-4'>
                       <Input
+                        type='text'
                         {...register(`variants.${index}.size`)}
                         placeholder='Size'
                       />
                       <Input
+                        type='text'
                         {...register(`variants.${index}.color`)}
                         placeholder='Color'
                       />
                       <Input
                         type='number'
-                        {...register(`variants.${index}.stock`, {
-                          valueAsNumber: true,
-                        })}
+                        {...register(`variants.${index}.stock`)}
                         placeholder='Stock'
                       />
                       <Button
