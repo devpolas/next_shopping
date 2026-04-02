@@ -96,8 +96,67 @@ export async function createSubCategory(
   }
 }
 
-export async function createProduct(data: ProductInput) {
+export async function createProduct(
+  data: ProductInput,
+): Promise<ResponseInterface> {
   const productData = productSchema.parse(data);
+
+  const {
+    name,
+    price,
+    discountPrice,
+    description,
+    gender,
+    categoryId,
+    isActive,
+    isFeatured,
+    brandId,
+    isNew,
+    images,
+    subCategoryId,
+    variants,
+  } = productData;
+
+  const slug = slugify(name);
+
+  try {
+    const isExits = await prisma.product.findUnique({ where: { slug } });
+    if (isExits) {
+      return { success: false, message: "product already exits" };
+    }
+
+    await prisma.product.create({
+      data: {
+        name,
+        slug,
+        description,
+        price,
+        discountPrice,
+        gender,
+        categoryId,
+        subCategoryId,
+        brandId,
+        isFeatured,
+        isNew,
+        isActive,
+        images: {
+          create: images.map((img) => ({ url: img.url })),
+        },
+        variants: {
+          create: variants.map((v) => ({
+            size: v.size,
+            color: v.color,
+            stock: v.stock,
+          })),
+        },
+      },
+    });
+
+    return { success: true, message: "Product created successfully" };
+  } catch (error) {
+    console.error("create product failed", error);
+    return { success: false, message: "something went wrong" };
+  }
 }
 
 export async function getBrands(): Promise<{
@@ -106,7 +165,7 @@ export async function getBrands(): Promise<{
   message?: string;
 }> {
   try {
-    const brands = await prisma.brand.findMany({});
+    const brands = await prisma.brand.findMany();
 
     return { success: true, brands };
   } catch (error) {
@@ -121,7 +180,7 @@ export async function getCategories(): Promise<{
   message?: string;
 }> {
   try {
-    const categories = await prisma.category.findMany({});
+    const categories = await prisma.category.findMany();
 
     return { success: true, categories };
   } catch (error) {
@@ -129,6 +188,7 @@ export async function getCategories(): Promise<{
     return { success: false, message: "fail to fetch category" };
   }
 }
+
 export async function getSubCategories(categoryId: string): Promise<{
   success: boolean;
   subCategories?: SubCategory[];

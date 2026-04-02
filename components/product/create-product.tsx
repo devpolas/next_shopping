@@ -31,6 +31,7 @@ import { Badge } from "../ui/badge";
 import {
   createBrand,
   createCategory,
+  createProduct,
   createSubCategory,
   getSubCategories,
 } from "@/lib/actions/product.actions";
@@ -291,9 +292,55 @@ export default function CreateProduct({
     closeDialog();
   };
 
+  const uploadImages = async (images: { file: File; url: string }[]) => {
+    const uploadedUrls: { url: string }[] = [];
+
+    for (const img of images) {
+      const formData = new FormData();
+      formData.append("file", img.file);
+      formData.append("upload_preset", "next_shopping");
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        { method: "POST", body: formData },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const data = await response.json();
+      uploadedUrls.push({ url: data.secure_url }); // this is the URL to store
+    }
+
+    return uploadedUrls;
+  };
+
   const onSubmit = async (data: ProductInput) => {
-    console.log("Submitting Product:", data);
-    alert("Product submitted! Check console for data.");
+    try {
+      const allImages = await uploadImages(data.images);
+
+      if (allImages.length === 0) {
+        toast.error("image upload failed");
+        return;
+      }
+
+      const response = await createProduct({
+        ...data,
+        isFeatured: data.isFeatured === "true",
+        isNew: data.isNew === "true",
+        isActive: data.isActive === "true",
+        images: allImages,
+      });
+
+      if (!response.success) {
+        toast.error(response.message);
+      }
+
+      toast.success(response.message);
+    } catch (error) {
+      toast.error("something went wrong");
+    }
   };
 
   useEffect(() => setMounted(true), []);
@@ -427,7 +474,9 @@ export default function CreateProduct({
                       />
                       <Input
                         type='number'
-                        {...register(`variants.${index}.stock`)}
+                        {...register(`variants.${index}.stock`, {
+                          valueAsNumber: true,
+                        })}
                         placeholder='Stock'
                       />
                       <Button
