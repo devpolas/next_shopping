@@ -34,6 +34,7 @@ import {
   createProduct,
   createSubCategory,
   getSubCategories,
+  isProductExits,
 } from "@/lib/actions/product.actions";
 import { toast } from "sonner";
 import { Brand, Category, SubCategory } from "@/types/product";
@@ -317,6 +318,13 @@ export default function CreateProduct({
 
   const onSubmit = async (data: ProductInput) => {
     try {
+      const isExitsProduct = await isProductExits(data.name);
+
+      if (isExitsProduct.success) {
+        toast.error("Product already exits");
+        return;
+      }
+
       const allImages = await uploadImages(data.images);
 
       if (allImages.length === 0) {

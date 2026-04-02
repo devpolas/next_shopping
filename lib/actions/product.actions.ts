@@ -207,3 +207,17 @@ export async function getSubCategories(categoryId: string): Promise<{
     return { success: false, message: "failed to fetch subcategory" };
   }
 }
+
+export async function isProductExits(name: string): Promise<ResponseInterface> {
+  const slug = slugify(name);
+  try {
+    const product = await prisma.product.findUnique({ where: { slug } });
+    if (product) {
+      return { success: true, message: "product already exits" };
+    }
+    return { success: false, message: "product doesn't exits" };
+  } catch (error) {
+    console.error("failed to fetch product");
+    return { success: true, message: "something went wrong" };
+  }
+}
