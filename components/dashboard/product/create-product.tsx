@@ -9,16 +9,16 @@ import { PlusCircle, X } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 import Loading from "@/app/loading";
-import { Heading3 } from "../typography/typography";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
-import { FormRhfInput } from "../rhf-input/form-rhf-input";
-import { FormRhfSelect } from "../rhf-input/form-rfh-select";
-import FormRhfTextarea from "../rhf-input/form-rfh-textarea";
-import LoadingSpinner from "../spinner/loading-spinner";
-import { ReusableDialog } from "../dialog/dialog";
-import { Label } from "../ui/label";
+import { Heading3 } from "../../typography/typography";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../../ui/field";
+import { FormRhfInput } from "../../rhf-input/form-rhf-input";
+import { FormRhfSelect } from "../../rhf-input/form-rfh-select";
+import FormRhfTextarea from "../../rhf-input/form-rfh-textarea";
+import LoadingSpinner from "../../spinner/loading-spinner";
+import { ReusableDialog } from "../../dialog/dialog";
+import { Label } from "../../ui/label";
 import {
   Select,
   SelectContent,
@@ -26,8 +26,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Badge } from "../ui/badge";
+} from "../../ui/select";
+import { Badge } from "../../ui/badge";
 import {
   createBrand,
   createCategory,

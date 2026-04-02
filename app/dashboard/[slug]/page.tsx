@@ -1,4 +1,4 @@
-import CreateProduct from "@/components/product/create-product";
+import CreateProduct from "@/components/dashboard/product/create-product";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SiteHeader } from "@/components/sidebar/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
