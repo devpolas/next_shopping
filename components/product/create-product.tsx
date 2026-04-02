@@ -244,7 +244,6 @@ export default function CreateProduct({
     if (!dialogType) return;
     const config = dialogConfig[dialogType];
     if (!config.value.trim()) return;
-    console.log(dialogType, ":", config.value);
 
     setIsLoading(true);
 
