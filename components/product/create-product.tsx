@@ -28,6 +28,16 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Badge } from "../ui/badge";
+import {
+  createBrand,
+  createCategory,
+  createSubCategory,
+  getSubCategories,
+} from "@/lib/actions/product.actions";
+import { toast } from "sonner";
+import { Brand, Category, SubCategory } from "@/types/product";
+import { useRouter } from "next/navigation";
+import { namePerfect } from "@/utils/utils";
 
 // ---------------- Zod Schema ----------------
 export const productSchema = z.object({
@@ -92,7 +102,14 @@ const productOptions = {
 };
 
 // ---------------- Component ----------------
-export default function CreateProduct() {
+export default function CreateProduct({
+  brands,
+  categories,
+}: {
+  brands: Brand[];
+  categories: Category[];
+}) {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const session = authClient.useSession();
 
@@ -106,7 +123,25 @@ export default function CreateProduct() {
   const [subcategoryName, setSubcategoryName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     "",
-  ); // explicitly a string
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [subcategories, setSubCategories] = useState<SubCategory[]>([]);
+
+  const allCategories = categories.map((category) => ({
+    label: category.name,
+    value: category.id,
+  }));
+
+  const allBrands = brands.map((brand) => ({
+    label: brand.name,
+    value: brand.id,
+  }));
+
+  const allSubCategories = subcategories.map((subcategory) => ({
+    label: subcategory.name,
+    value: subcategory.id,
+  }));
 
   // ---------------- Dialog Config ----------------
   const dialogConfig = {
@@ -184,6 +219,7 @@ export default function CreateProduct() {
   const price = watch("price");
   const discountPrice = watch("discountPrice");
   const images = watch("images");
+  const watchSubcategory = watch("subCategoryId");
 
   // ---------------- Handlers ----------------
   const handleImageChange = (files: FileList | null) => {
@@ -212,12 +248,57 @@ export default function CreateProduct() {
     setIsDialogOpen(false);
   };
 
-  const handleDialogSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleDialogSubmit = async (
+    e: React.SyntheticEvent<HTMLFormElement>,
+  ) => {
     e.preventDefault();
     if (!dialogType) return;
     const config = dialogConfig[dialogType];
     if (!config.value.trim()) return;
     console.log(dialogType, ":", config.value);
+
+    setIsLoading(true);
+
+    try {
+      if (dialogType === "brand") {
+        const response = await createBrand(config.value);
+        if (!response.success) {
+          toast.error(response.message);
+          return;
+        }
+      }
+
+      if (dialogType === "category") {
+        const response = await createCategory(config.value);
+        if (!response.success) {
+          toast.error(response.message);
+          return;
+        }
+      }
+
+      if (dialogType === "subCategory") {
+        if (!selectedCategory) {
+          toast.error("Please Provide category for creating subcategory");
+          return;
+        }
+        const response = await createSubCategory(
+          selectedCategory,
+          config.value,
+        );
+        if (!response.success) {
+          toast.error(response.message);
+          return;
+        }
+      }
+
+      router.refresh();
+      toast.success("Successfully created");
+    } catch (error) {
+      toast.error("something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+
     config.setValue("");
     closeDialog();
   };
@@ -228,6 +309,21 @@ export default function CreateProduct() {
   };
 
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!watchSubcategory) return;
+
+    async function fetchSubcategories() {
+      const response = await getSubCategories(watchSubcategory);
+
+      if (response.success && response.subCategories) {
+        setSubCategories(response.subCategories);
+      }
+    }
+
+    fetchSubcategories();
+  }, [watchSubcategory]);
+
   if (!mounted || session.isPending) return <Loading />;
 
   const currentDialog = dialogType ? dialogConfig[dialogType] : null;
@@ -318,6 +414,11 @@ export default function CreateProduct() {
                       <PlusCircle /> Create New Variant
                     </Badge>
                   </div>
+
+                  {errors.variants && (
+                    <p className='text-red-500 text-sm'>Please add variants</p>
+                  )}
+
                   {variantFields.map((field, index) => (
                     <div key={field.id} className='flex items-end gap-4'>
                       <Input
@@ -353,7 +454,7 @@ export default function CreateProduct() {
                   control={control}
                   name='brandId'
                   label='Brand'
-                  options={productOptions.brand}
+                  options={allBrands}
                   placeholder='Select Brand'
                   createNew
                   onCreateNew={() => openDialog("brand")}
@@ -362,7 +463,7 @@ export default function CreateProduct() {
                   control={control}
                   name='categoryId'
                   label='Category'
-                  options={productOptions.category}
+                  options={allCategories}
                   placeholder='Select Category'
                   createNew
                   onCreateNew={() => openDialog("category")}
@@ -447,6 +548,7 @@ export default function CreateProduct() {
           submitText={currentDialog.submitText}
           cancelText='Close'
           onSubmit={handleDialogSubmit}
+          isSubmitting={isLoading}
           isSubmittingText={currentDialog.submittingText}
         >
           {dialogType === "subCategory" && (
@@ -461,9 +563,9 @@ export default function CreateProduct() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {productOptions.category.map((option, i) => (
+                    {allCategories.map((option, i) => (
                       <SelectItem key={i} value={option.value}>
-                        {option.label}
+                        {namePerfect(option.label)}
                       </SelectItem>
                     ))}
                   </SelectGroup>

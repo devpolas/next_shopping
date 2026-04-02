@@ -3,6 +3,7 @@
 import prisma from "../db";
 import slugify from "slugify";
 import { ProductInput, productSchema } from "../validators/product-schema";
+import { Brand, Category, SubCategory } from "@/types/product";
 
 interface ResponseInterface {
   success: boolean;
@@ -20,10 +21,8 @@ export async function createBrand(name: string): Promise<ResponseInterface> {
       return { success: false, message: "Brand already exists" };
     }
 
-    const slug = slugify(brandName);
-
     await prisma.brand.create({
-      data: { name: brandName, slug },
+      data: { name: brandName },
     });
 
     return { success: true, message: "Brand successfully created" };
@@ -62,6 +61,12 @@ export async function createSubCategory(
   name: string,
 ): Promise<ResponseInterface> {
   const subcategoryName = name.toLocaleLowerCase();
+  if (!categoryId) {
+    return {
+      success: false,
+      message: "Please Provide category for creating subcategory",
+    };
+  }
   try {
     const isExists = await prisma.subCategory.findFirst({
       where: { categoryId, name: subcategoryName },
@@ -93,4 +98,49 @@ export async function createSubCategory(
 
 export async function createProduct(data: ProductInput) {
   const productData = productSchema.parse(data);
+}
+
+export async function getBrands(): Promise<{
+  success: boolean;
+  brands?: Brand[];
+  message?: string;
+}> {
+  try {
+    const brands = await prisma.brand.findMany({});
+
+    return { success: true, brands };
+  } catch (error) {
+    console.error("brands fetch failed", error);
+    return { success: false, message: "failed to fetch brands" };
+  }
+}
+
+export async function getCategories(): Promise<{
+  success: boolean;
+  categories?: Category[];
+  message?: string;
+}> {
+  try {
+    const categories = await prisma.category.findMany({});
+
+    return { success: true, categories };
+  } catch (error) {
+    console.error("Category fetch failed", error);
+    return { success: false, message: "fail to fetch category" };
+  }
+}
+export async function getSubCategories(categoryId: string): Promise<{
+  success: boolean;
+  subCategories?: SubCategory[];
+  message?: string;
+}> {
+  try {
+    const subCategories = await prisma.subCategory.findMany({
+      where: { categoryId },
+    });
+    return { success: true, subCategories };
+  } catch (error) {
+    console.error("subcategory fetch failed", error);
+    return { success: false, message: "failed to fetch subcategory" };
+  }
 }

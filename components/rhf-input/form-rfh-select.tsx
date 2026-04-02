@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "../ui/badge";
 import { PlusCircleIcon } from "lucide-react";
+import { namePerfect } from "@/utils/utils";
 
 type Option = {
   label: string;
@@ -80,7 +81,7 @@ export function FormRhfSelect<T extends FieldValues>({
                 <SelectGroup>
                   {options.map((option, i) => (
                     <SelectItem key={i} value={option.value}>
-                      {option.label}
+                      {namePerfect(option.label)}
                     </SelectItem>
                   ))}
                 </SelectGroup>

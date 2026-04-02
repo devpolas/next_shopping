@@ -3,9 +3,11 @@ export type Gender = "men" | "women" | "unisex";
 export interface Category {
   id: string;
   name: string;
-  slug: string;
-  description?: string;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  slug: string;
+  description: string | null;
 }
 
 export interface SubCategory {
@@ -14,12 +16,16 @@ export interface SubCategory {
   slug: string;
   categoryId: string;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Brand {
   id: string;
   name: string;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ProductVariant {
