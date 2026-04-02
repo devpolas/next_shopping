@@ -174,6 +174,7 @@ export default function CreateProduct({
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ProductInput>({
     resolver: zodResolver(productSchema),
@@ -298,7 +299,10 @@ export default function CreateProduct({
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (!watchCategory) return;
+    if (!watchCategory) {
+      setSubCategories([]);
+      return;
+    }
 
     async function fetchSubcategories() {
       const response = await getSubCategories(watchCategory);
@@ -309,7 +313,10 @@ export default function CreateProduct({
     }
 
     fetchSubcategories();
-  }, [watchCategory]);
+
+    // reset selected subcategory
+    setValue("subCategoryId", "");
+  }, [watchCategory, setValue]);
 
   if (!mounted || session.isPending) return <Loading />;
 
@@ -463,6 +470,7 @@ export default function CreateProduct({
                   placeholder='Select Subcategory'
                   createNew
                   onCreateNew={() => openDialog("subCategory")}
+                  disabled={!watchCategory}
                 />
                 <FormRhfTextarea
                   control={control}
