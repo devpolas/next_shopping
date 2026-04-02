@@ -2,11 +2,7 @@ import CreateProduct from "@/components/product/create-product";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SiteHeader } from "@/components/sidebar/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import {
-  getBrands,
-  getCategories,
-  getSubCategories,
-} from "@/lib/actions/product.actions";
+import { getBrands, getCategories } from "@/lib/actions/product.actions";
 
 export default async function page({
   params,
@@ -21,7 +17,6 @@ export default async function page({
   const [brandsResult, categoriesResult] = await Promise.all([
     getBrands(),
     getCategories(),
-    getSubCategories(),
   ]);
 
   const brands = brandsResult.success ? brandsResult.brands || [] : [];

@@ -134,6 +134,9 @@ export async function getSubCategories(categoryId: string): Promise<{
   subCategories?: SubCategory[];
   message?: string;
 }> {
+  if (!categoryId) {
+    return { success: false, message: "Please provide categoryId" };
+  }
   try {
     const subCategories = await prisma.subCategory.findMany({
       where: { categoryId },

@@ -87,18 +87,6 @@ const productOptions = {
     { label: "True", value: "true" },
     { label: "False", value: "false" },
   ],
-  brand: [
-    { label: "Tata", value: "tata" },
-    { label: "Bata", value: "bata" },
-  ],
-  category: [
-    { label: "T-shirt", value: "t-shirt" },
-    { label: "Gents", value: "gents" },
-  ],
-  subCategory: [
-    { label: "T-shirt", value: "t-shirt" },
-    { label: "Gents", value: "gents" },
-  ],
 };
 
 // ---------------- Component ----------------
@@ -472,7 +460,7 @@ export default function CreateProduct({
                   control={control}
                   name='subCategoryId'
                   label='Subcategory'
-                  options={productOptions.subCategory}
+                  options={allSubCategories}
                   placeholder='Select Subcategory'
                   createNew
                   onCreateNew={() => openDialog("subCategory")}
