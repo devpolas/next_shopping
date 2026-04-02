@@ -1,11 +1,9 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import data from "./data.json";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SiteHeader } from "@/components/sidebar/site-header";
 import { SectionCards } from "@/components/sidebar/section-cards";
 import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactive";
-import { DataTable } from "@/components/sidebar/data-table";
 
 export default function Page() {
   return (
@@ -27,7 +25,6 @@ export default function Page() {
               <div className='px-4 lg:px-6'>
                 <ChartAreaInteractive />
               </div>
-              <DataTable data={data} />
             </div>
           </div>
         </div>

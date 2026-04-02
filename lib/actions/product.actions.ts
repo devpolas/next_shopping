@@ -3,7 +3,7 @@
 import prisma from "../db";
 import slugify from "slugify";
 import { ProductInput, productSchema } from "../validators/product-schema";
-import { Brand, Category, SubCategory } from "@/types/product";
+import { Brand, Category, Product, SubCategory } from "@/types/product";
 
 interface ResponseInterface {
   success: boolean;
@@ -155,6 +155,35 @@ export async function createProduct(
     return { success: true, message: "Product created successfully" };
   } catch (error) {
     console.error("create product failed", error);
+    return { success: false, message: "something went wrong" };
+  }
+}
+
+export async function getProducts(): Promise<{
+  success: boolean;
+  message?: string;
+  products?: Product[];
+}> {
+  try {
+    const response = await prisma.product.findMany({
+      include: {
+        images: true,
+        variants: true,
+        brand: true,
+        category: true,
+        subCategory: true,
+      },
+    });
+
+    const products: Product[] = response.map((p) => ({
+      ...p,
+      price: p.price.toNumber(),
+      discountPrice: p.discountPrice?.toNumber() ?? null,
+    }));
+
+    return { success: true, products };
+  } catch (error) {
+    console.error("failed to fetch products data", error);
     return { success: false, message: "something went wrong" };
   }
 }
