@@ -91,6 +91,22 @@ const productOptions = {
   ],
 };
 
+const productDefaultValues = {
+  name: "",
+  description: "",
+  price: undefined,
+  discountPrice: undefined,
+  gender: undefined,
+  categoryId: "",
+  subCategoryId: "",
+  brandId: undefined,
+  isFeatured: undefined,
+  isNew: undefined,
+  isActive: undefined,
+  images: [],
+  variants: [{ size: "", color: "", stock: 0 }],
+};
+
 // ---------------- Component ----------------
 export default function CreateProduct({
   brands,
@@ -180,21 +196,7 @@ export default function CreateProduct({
     formState: { errors, isSubmitting },
   } = useForm<ProductInput>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      price: undefined,
-      discountPrice: undefined,
-      gender: undefined,
-      categoryId: "",
-      subCategoryId: "",
-      brandId: undefined,
-      isFeatured: undefined,
-      isNew: undefined,
-      isActive: undefined,
-      images: [],
-      variants: [{ size: "", color: "", stock: 0 }],
-    },
+    defaultValues: productDefaultValues,
   });
 
   const imagesFieldArray = useFieldArray({ control, name: "images" });
@@ -345,6 +347,8 @@ export default function CreateProduct({
       }
 
       toast.success(response.message);
+      router.push("/dashboard/product");
+      router.refresh();
     } catch (error) {
       toast.error("something went wrong");
     }
