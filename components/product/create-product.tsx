@@ -207,8 +207,7 @@ export default function CreateProduct({
   const price = watch("price");
   const discountPrice = watch("discountPrice");
   const images = watch("images");
-  const watchSubcategory = watch("subCategoryId");
-
+  const watchCategory = watch("categoryId");
   // ---------------- Handlers ----------------
   const handleImageChange = (files: FileList | null) => {
     if (!files) return;
@@ -299,10 +298,10 @@ export default function CreateProduct({
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (!watchSubcategory) return;
+    if (!watchCategory) return;
 
     async function fetchSubcategories() {
-      const response = await getSubCategories(watchSubcategory);
+      const response = await getSubCategories(watchCategory);
 
       if (response.success && response.subCategories) {
         setSubCategories(response.subCategories);
@@ -310,7 +309,7 @@ export default function CreateProduct({
     }
 
     fetchSubcategories();
-  }, [watchSubcategory]);
+  }, [watchCategory]);
 
   if (!mounted || session.isPending) return <Loading />;
 
