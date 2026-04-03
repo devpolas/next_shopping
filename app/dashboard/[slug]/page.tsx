@@ -51,7 +51,7 @@ export default async function page({
               {isCreateProductPage && (
                 <CreateProduct brands={brands} categories={categories} />
               )}
-              {isProductPage && <ShowAllProducts />}
+              {isProductPage && <ShowAllProducts allProducts={products} />}
             </div>
           </div>
         </div>
