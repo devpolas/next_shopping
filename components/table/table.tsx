@@ -72,58 +72,19 @@ import {
 
 import useColumn from "./column";
 import { DraggableRow } from "./drag/drag";
+import { Field } from "../ui/field";
+import { ButtonGroup } from "../ui/button-group";
+import { Input } from "../ui/input";
+import { productSchema } from "./table-schema";
 
-export const tableSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  price: z.number(),
-  discountPrice: z.number().nullable().optional(),
-  gender: z.string(),
-  categoryId: z.string(),
-  subCategoryId: z.string(),
-  brandId: z.string().nullable().optional(),
-  images: z.array(z.object({ id: z.string(), url: z.string() })),
-  isFeatured: z.boolean(),
-  isNew: z.boolean(),
-  isActive: z.boolean(),
-  variants: z.array(
-    z.object({
-      size: z.string(),
-      color: z.string(),
-      stock: z.coerce.number(),
-    }),
-  ),
-  brand: z
-    .object({
-      id: z.string(),
-      name: z.string(),
-      isActive: z.boolean(),
-    })
-    .nullable()
-    .optional(),
-  category: z.object({
-    id: z.string(),
-    name: z.string(),
-    description: z.string().nullable().optional(),
-    isActive: z.boolean(),
-  }),
-  subCategory: z.object({
-    id: z.string(),
-    name: z.string(),
-    categoryId: z.string(),
-    isActive: z.boolean(),
-  }),
-});
-
-export type TableDataType = z.input<typeof tableSchema>;
+export type TableDataType = z.input<typeof productSchema>;
 
 // Create a separate component for the drag handle
 
 export function DataTable({
   data: initialData,
 }: {
-  data: z.infer<typeof tableSchema>[];
+  data: z.infer<typeof productSchema>[];
 }) {
   const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
@@ -137,7 +98,7 @@ export function DataTable({
     pageIndex: 0,
     pageSize: 10,
   });
-  const { columns } = useColumn();
+  const { productColumns } = useColumn();
   const sortableId = React.useId();
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -152,7 +113,7 @@ export function DataTable({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: productColumns,
     state: {
       sorting,
       columnVisibility,
@@ -186,42 +147,24 @@ export function DataTable({
     }
   }
 
+  function Search() {
+    return (
+      <Field className='max-w-md'>
+        <ButtonGroup>
+          <Input id='input-button-group' placeholder='Type to search...' />
+          <Button variant='outline'>Search</Button>
+        </ButtonGroup>
+      </Field>
+    );
+  }
+
   return (
     <Tabs
       defaultValue='outline'
       className='flex-col justify-start gap-6 w-full'
     >
       <div className='flex justify-between items-center px-4 lg:px-6'>
-        <Label htmlFor='view-selector' className='sr-only'>
-          View
-        </Label>
-        <Select defaultValue='outline'>
-          <SelectTrigger
-            className='@4xl/main:hidden flex w-fit'
-            size='sm'
-            id='view-selector'
-          >
-            <SelectValue placeholder='Select a view' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value='outline'>Outline</SelectItem>
-              <SelectItem value='past-performance'>Past Performance</SelectItem>
-              <SelectItem value='key-personnel'>Key Personnel</SelectItem>
-              <SelectItem value='focus-documents'>Focus Documents</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <TabsList className='hidden @4xl/main:flex **:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:px-1 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:size-5'>
-          <TabsTrigger value='outline'>Outline</TabsTrigger>
-          <TabsTrigger value='past-performance'>
-            Past Performance <Badge variant='secondary'>3</Badge>
-          </TabsTrigger>
-          <TabsTrigger value='key-personnel'>
-            Key Personnel <Badge variant='secondary'>2</Badge>
-          </TabsTrigger>
-          <TabsTrigger value='focus-documents'>Focus Documents</TabsTrigger>
-        </TabsList>
+        <Search />
         <div className='flex items-center gap-2'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -305,7 +248,7 @@ export function DataTable({
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      colSpan={productColumns.length}
                       className='h-24 text-center'
                     >
                       No results.

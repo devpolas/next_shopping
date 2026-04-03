@@ -1,7 +1,6 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import * as z from "zod";
 
-import { tableSchema } from "./table";
 import { DragHandle } from "./drag/drag";
 import { Checkbox } from "../ui/checkbox";
 import { TableCellViewer } from "./table-cell-viewer";
@@ -15,9 +14,10 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { EllipsisVerticalIcon } from "lucide-react";
+import { orderSchema, productSchema } from "./table-schema";
 
 export default function useColumn() {
-  const columns: ColumnDef<z.infer<typeof tableSchema>>[] = [
+  const productColumns: ColumnDef<z.infer<typeof productSchema>>[] = [
     {
       id: "drag",
       header: () => null,
@@ -53,7 +53,7 @@ export default function useColumn() {
     },
     {
       accessorKey: "header",
-      header: "Header",
+      header: "Product Name",
       cell: ({ row }) => {
         return <TableCellViewer item={row.original} />;
       },
@@ -88,16 +88,12 @@ export default function useColumn() {
     {
       accessorKey: "category",
       header: "Category",
-      cell: ({ row }) => {
-        <p>{row.original.category.name}</p>;
-      },
+      cell: ({ row }) => <p>{row.original.category.name}</p>,
     },
     {
       accessorKey: "subCategory",
       header: "SubCategory",
-      cell: ({ row }) => {
-        <p>{row.original.subCategory.name}</p>;
-      },
+      cell: ({ row }) => <p>{row.original.subCategory.name}</p>,
     },
     {
       id: "actions",
@@ -125,5 +121,88 @@ export default function useColumn() {
     },
   ];
 
-  return { columns };
+  const orderColumns: ColumnDef<z.infer<typeof orderSchema>>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <div className='flex justify-center items-center'>
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label='Select all'
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className='flex justify-center items-center'>
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label='Select row'
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      id: "user",
+      accessorKey: "user",
+      header: "Order By",
+      cell: ({ row }) => (
+        <p>{`${row.original.user.name} - ${row.original.phone}`}</p>
+      ),
+    },
+    {
+      id: "price",
+      header: "Total Amount",
+      accessorKey: "totalAmount",
+      cell: ({ row }) => <p>{row.original.totalAmount}</p>,
+    },
+    {
+      id: "header",
+      accessorKey: "items",
+      header: "Products",
+      cell: ({ row }) => (
+        <p>
+          {row.original.items.map((item) => (
+            <p key={item.id}>{item.product.name}</p>
+          ))}
+        </p>
+      ),
+    },
+    {
+      id: "address",
+      accessorKey: "address",
+      header: "Send Address",
+      cell: ({ row }) => (
+        <p>{`${row.original.address} - ${row.original.postalCode}, ${row.original.city},${row.original.country}`}</p>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessorKey: "status",
+      cell: ({ row }) => <p>{row.original.status}</p>,
+    },
+    {
+      id: "payment",
+      accessorKey: "payment",
+      header: "Payment",
+      cell: ({ row }) => (
+        <p>
+          {row.original.payment?.method
+            ? `${row.original.payment.transactionId} - ${row.original.payment.method}`
+            : row.original.payment?.status}
+        </p>
+      ),
+    },
+  ];
+
+  return { productColumns, orderColumns };
 }

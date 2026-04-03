@@ -13,7 +13,7 @@ import {
 } from "../ui/drawer";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { tableSchema } from "./table";
+
 import {
   Select,
   SelectContent,
@@ -22,11 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { productSchema } from "./table-schema";
 
 export function TableCellViewer({
   item,
 }: {
-  item: z.infer<typeof tableSchema>;
+  item: z.infer<typeof productSchema>;
 }) {
   const isMobile = useIsMobile();
 
@@ -56,7 +57,7 @@ export function TableCellViewer({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value='man'>Man</SelectItem>
+                      <SelectItem value='men'>Man</SelectItem>
                       <SelectItem value='women'>Women</SelectItem>
                       <SelectItem value='unisex'>Unisex</SelectItem>
                     </SelectGroup>
