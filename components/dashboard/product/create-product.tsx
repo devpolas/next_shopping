@@ -346,9 +346,11 @@ export default function CreateProduct({
         toast.error(response.message);
       }
 
-      toast.success(response.message);
-      router.push("/dashboard/product");
-      router.refresh();
+      if (response.success) {
+        toast.success(response.message);
+        router.push("/dashboard/products");
+        router.refresh();
+      }
     } catch (error) {
       toast.error("something went wrong");
     }
