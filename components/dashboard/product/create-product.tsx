@@ -619,7 +619,8 @@ export default function CreateProduct({
           isSubmitting={isLoading}
           isSubmittingText={currentDialog.submittingText}
         >
-          {dialogType === "subcategory" && (
+          {(dialogType === "subcategory" ||
+            dialogType === "subSubCategory") && (
             <Field>
               <Label>Select Root Category</Label>
               <Select
