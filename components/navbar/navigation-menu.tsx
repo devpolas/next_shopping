@@ -13,7 +13,7 @@ function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <div className='relative flex flex-col bg-background px-4 md:px-8'>
+    <div className='relative'>
       <div className='z-10 relative flex justify-between items-center gap-4 py-4'>
         <div className='flex flex-row items-center gap-4'>
           <Logo />

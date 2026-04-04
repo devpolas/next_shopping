@@ -6,9 +6,12 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { PlusCircle, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
 import Loading from "@/app/loading";
+import LoadingSpinner from "../../spinner/loading-spinner";
 import { Heading3 } from "../../typography/typography";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -16,7 +19,6 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "../../ui/field";
 import { FormRhfInput } from "../../rhf-input/form-rhf-input";
 import { FormRhfSelect } from "../../rhf-input/form-rfh-select";
 import FormRhfTextarea from "../../rhf-input/form-rfh-textarea";
-import LoadingSpinner from "../../spinner/loading-spinner";
 import { ReusableDialog } from "../../dialog/dialog";
 import { Label } from "../../ui/label";
 import {
@@ -28,17 +30,16 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Badge } from "../../ui/badge";
+
 import {
   createBrand,
-  createCategory,
   createProduct,
   createSubCategory,
+  createSubSubCategory,
   getSubCategories,
-  isProductExits,
+  isProductExists,
 } from "@/lib/actions/product.actions";
-import { toast } from "sonner";
-import { Brand, Category, SubCategory } from "@/types/product";
-import { useRouter } from "next/navigation";
+import { Brand, Category, SubCategory, SubSubCategory } from "@/types/product";
 import { namePerfect } from "@/utils/utils";
 
 // ---------------- Zod Schema ----------------
@@ -50,6 +51,7 @@ export const productSchema = z.object({
   gender: z.enum(["men", "women", "unisex"]),
   categoryId: z.string().min(1),
   subCategoryId: z.string().min(1),
+  subSubCategoryId: z.string().optional(),
   brandId: z.string().optional(),
   images: z
     .array(z.object({ file: z.instanceof(File), url: z.string() }))
@@ -70,41 +72,35 @@ export const productSchema = z.object({
 
 export type ProductInput = z.infer<typeof productSchema>;
 
-// ---------------- Static Data ----------------
+// ---------------- Default Values ----------------
+const productDefaultValues: ProductInput = {
+  name: "",
+  description: "",
+  price: 0,
+  discountPrice: undefined,
+  gender: "men",
+  categoryId: "",
+  subCategoryId: "",
+  subSubCategoryId: "",
+  brandId: "",
+  isFeatured: "false",
+  isNew: "false",
+  isActive: "true",
+  images: [],
+  variants: [{ size: "", color: "", stock: 1 }],
+};
+
+// ---------------- Static Options ----------------
 const productOptions = {
   gender: [
     { label: "Men", value: "men" },
     { label: "Women", value: "women" },
     { label: "Unisex", value: "unisex" },
   ],
-  isFeatured: [
-    { label: "True", value: "true" },
-    { label: "False", value: "false" },
+  boolean: [
+    { label: "Yes", value: "true" },
+    { label: "No", value: "false" },
   ],
-  isNew: [
-    { label: "True", value: "true" },
-    { label: "False", value: "false" },
-  ],
-  isActive: [
-    { label: "True", value: "true" },
-    { label: "False", value: "false" },
-  ],
-};
-
-const productDefaultValues = {
-  name: "",
-  description: "",
-  price: undefined,
-  discountPrice: undefined,
-  gender: undefined,
-  categoryId: "",
-  subCategoryId: "",
-  brandId: undefined,
-  isFeatured: undefined,
-  isNew: undefined,
-  isActive: undefined,
-  images: [],
-  variants: [{ size: "", color: "", stock: 0 }],
 };
 
 // ---------------- Component ----------------
@@ -116,38 +112,42 @@ export default function CreateProduct({
   categories: Category[];
 }) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const session = authClient.useSession();
+  const [mounted, setMounted] = useState(false);
 
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<
-    "brand" | "category" | "subCategory" | ""
+    "brand" | "subcategory" | "subSubCategory" | ""
   >("");
   const [brandName, setBrandName] = useState("");
-  const [categoryName, setCategoryName] = useState("");
-  const [subcategoryName, setSubcategoryName] = useState("");
+  const [subCategoryName, setSubCategoryName] = useState("");
+  const [subSubCategoryName, setSubSubCategoryName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     "",
   );
+  const [selectedSubCategory, setSelectedSubCategory] = useState<
+    string | undefined
+  >("");
+
   const [isLoading, setIsLoading] = useState(false);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
 
-  const [subcategories, setSubCategories] = useState<SubCategory[]>([]);
+  const allCategories = categories.map((c) => ({ label: c.name, value: c.id }));
 
-  const allCategories = categories.map((category) => ({
-    label: category.name,
-    value: category.id,
+  const allBrands = brands.map((b) => ({ label: b.name, value: b.id }));
+
+  const allSubCategories = subCategories.map((sc) => ({
+    label: sc.name,
+    value: sc.id,
   }));
 
-  const allBrands = brands.map((brand) => ({
-    label: brand.name,
-    value: brand.id,
-  }));
-
-  const allSubCategories = subcategories.map((subcategory) => ({
-    label: subcategory.name,
-    value: subcategory.id,
-  }));
+  const allSubSubCategories = subCategories
+    .flatMap((sc) => sc.subSubCategories || [])
+    .map((ssc) => ({
+      label: ssc.name,
+      value: ssc.id,
+    }));
 
   // ---------------- Dialog Config ----------------
   const dialogConfig = {
@@ -162,23 +162,23 @@ export default function CreateProduct({
       label: "Brand Name",
       placeholder: "Enter Brand Name",
     },
-    category: {
+    subcategory: {
       title: "Create New Category",
       description:
         "Define a category to keep your catalog structured and easy to navigate.",
-      value: categoryName,
-      setValue: setCategoryName,
+      value: subCategoryName,
+      setValue: setSubCategoryName,
       submitText: "Create Category",
       submittingText: "Categorizing...",
       label: "Category Name",
       placeholder: "Enter Category Name",
     },
-    subCategory: {
+    subSubCategory: {
       title: "Create New Subcategory",
       description:
-        "Define a subcategory to group products under a parent category.",
-      value: subcategoryName,
-      setValue: setSubcategoryName,
+        "Define a subcategory to group products under a parent subcategory.",
+      value: subSubCategoryName,
+      setValue: setSubSubCategoryName,
       submitText: "Create Subcategory",
       submittingText: "SubCategorizing...",
       label: "Subcategory Name",
@@ -186,7 +186,7 @@ export default function CreateProduct({
     },
   };
 
-  // ---------------- React Hook Form ----------------
+  // ---------------- Form Setup ----------------
   const {
     register,
     control,
@@ -213,10 +213,42 @@ export default function CreateProduct({
   const discountPrice = watch("discountPrice");
   const images = watch("images");
   const watchCategory = watch("categoryId");
+  const watchSubCategory = watch("subCategoryId");
+
+  // ---------------- Effects ----------------
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!watchCategory) {
+      setSubCategories([]);
+      return;
+    }
+
+    async function fetchSubcategory() {
+      const response = await getSubCategories(watchCategory);
+      if (response.success && response.subCategories) {
+        setSubCategories(response.subCategories);
+      }
+    }
+
+    fetchSubcategory();
+    setValue("subCategoryId", "");
+  }, [watchCategory, setValue]);
+
+  // Clean up object URLs on unmount
+  useEffect(() => {
+    return () => images.forEach((img) => URL.revokeObjectURL(img.url));
+  }, [images]);
+
   // ---------------- Handlers ----------------
   const handleImageChange = (files: FileList | null) => {
     if (!files) return;
     const remaining = 5 - images.length;
+    if (remaining <= 0) {
+      toast.error("Maximum 5 images allowed");
+      return;
+    }
+
     Array.from(files)
       .slice(0, remaining)
       .forEach((file) =>
@@ -229,9 +261,14 @@ export default function CreateProduct({
     imagesFieldArray.remove(index);
   };
 
-  const openDialog = (type: "brand" | "category" | "subCategory") => {
+  const openDialog = (type: "brand" | "subcategory" | "subSubCategory") => {
     setDialogType(type);
-    setSelectedCategory("");
+    if (type === "subcategory") {
+      setSelectedCategory(watchCategory || "");
+    }
+    if (type === "subSubCategory") {
+      setSelectedSubCategory(watchSubCategory || "");
+    }
     setIsDialogOpen(true);
   };
 
@@ -249,54 +286,48 @@ export default function CreateProduct({
     if (!config.value.trim()) return;
 
     setIsLoading(true);
-
     try {
+      let response;
       if (dialogType === "brand") {
-        const response = await createBrand(config.value);
-        if (!response.success) {
-          toast.error(response.message);
-          return;
-        }
+        response = await createBrand(config.value);
       }
-
-      if (dialogType === "category") {
-        const response = await createCategory(config.value);
-        if (!response.success) {
-          toast.error(response.message);
-          return;
-        }
-      }
-
-      if (dialogType === "subCategory") {
+      if (dialogType === "subcategory") {
         if (!selectedCategory) {
-          toast.error("Please Provide category for creating subcategory");
+          toast.error("Please select a category");
           return;
         }
-        const response = await createSubCategory(
-          selectedCategory,
+        response = await createSubCategory(selectedCategory, config.value);
+      }
+      if (dialogType === "subSubCategory") {
+        if (!selectedSubCategory) {
+          toast.error("Please select a subcategory");
+          return;
+        }
+        response = await createSubSubCategory(
+          selectedSubCategory,
           config.value,
         );
-        if (!response.success) {
-          toast.error(response.message);
-          return;
-        }
+      }
+
+      if (!response?.success) {
+        toast.error(response?.message || "Failed to create");
+        return;
       }
 
       router.refresh();
-      toast.success("Successfully created");
+      toast.success("Created successfully");
+      config.setValue("");
+      closeDialog();
     } catch (error) {
-      toast.error("something went wrong");
+      console.error(error);
+      toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
-
-    config.setValue("");
-    closeDialog();
   };
 
   const uploadImages = async (images: { file: File; url: string }[]) => {
     const uploadedUrls: { url: string }[] = [];
-
     for (const img of images) {
       const formData = new FormData();
       formData.append("file", img.file);
@@ -307,76 +338,51 @@ export default function CreateProduct({
         { method: "POST", body: formData },
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
+      if (!response.ok) throw new Error("Failed to upload image");
 
       const data = await response.json();
-      uploadedUrls.push({ url: data.secure_url }); // this is the URL to store
+      uploadedUrls.push({ url: data.secure_url });
     }
-
     return uploadedUrls;
   };
 
   const onSubmit = async (data: ProductInput) => {
+    setIsLoading(true);
     try {
-      const isExitsProduct = await isProductExits(data.name);
-
-      if (isExitsProduct.success) {
-        toast.error("Product already exits");
+      const exists = await isProductExists(data.name);
+      if (exists.success) {
+        toast.error("Product already exists");
         return;
       }
 
-      const allImages = await uploadImages(data.images);
-
-      if (allImages.length === 0) {
-        toast.error("image upload failed");
+      const uploadedImages = await uploadImages(data.images);
+      if (uploadedImages.length === 0) {
+        toast.error("Image upload failed");
         return;
       }
 
       const response = await createProduct({
         ...data,
+        isActive: data.isActive === "true",
         isFeatured: data.isFeatured === "true",
         isNew: data.isNew === "true",
-        isActive: data.isActive === "true",
-        images: allImages,
+        images: uploadedImages,
       });
-
       if (!response.success) {
         toast.error(response.message);
+        return;
       }
 
-      if (response.success) {
-        toast.success(response.message);
-        router.push("/dashboard/products");
-        router.refresh();
-      }
+      toast.success(response.message);
+      router.push("/dashboard/products");
+      router.refresh();
     } catch (error) {
-      toast.error("something went wrong");
+      console.error(error);
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    if (!watchCategory) {
-      setSubCategories([]);
-      return;
-    }
-
-    async function fetchSubcategories() {
-      const response = await getSubCategories(watchCategory);
-
-      if (response.success && response.subCategories) {
-        setSubCategories(response.subCategories);
-      }
-    }
-
-    fetchSubcategories();
-
-    // reset selected subcategory
-    setValue("subCategoryId", "");
-  }, [watchCategory, setValue]);
 
   if (!mounted || session.isPending) return <Loading />;
 
@@ -398,7 +404,6 @@ export default function CreateProduct({
           <div className='flex flex-col gap-6'>
             {/* ---------------- Product Info ---------------- */}
             <div className='flex lg:flex-row flex-col gap-6'>
-              {/* Left Column */}
               <div className='flex flex-col flex-1 gap-6'>
                 <FormRhfInput
                   name='name'
@@ -426,32 +431,33 @@ export default function CreateProduct({
                     Discount must be less than price
                   </p>
                 )}
+
                 <FormRhfSelect
-                  control={control}
                   name='gender'
+                  control={control}
                   label='Gender'
                   options={productOptions.gender}
                   placeholder='Select Gender'
                 />
                 <FormRhfSelect
-                  control={control}
                   name='isFeatured'
+                  control={control}
                   label='Featured'
-                  options={productOptions.isFeatured}
+                  options={productOptions.boolean}
                   placeholder='Featured?'
                 />
                 <FormRhfSelect
-                  control={control}
                   name='isNew'
+                  control={control}
                   label='New'
-                  options={productOptions.isNew}
+                  options={productOptions.boolean}
                   placeholder='New?'
                 />
                 <FormRhfSelect
-                  control={control}
                   name='isActive'
+                  control={control}
                   label='Active'
-                  options={productOptions.isActive}
+                  options={productOptions.boolean}
                   placeholder='Active?'
                 />
 
@@ -462,17 +468,15 @@ export default function CreateProduct({
                     <Badge
                       className='hover:cursor-pointer'
                       onClick={() =>
-                        appendVariant({ size: "", color: "", stock: 0 })
+                        appendVariant({ size: "", color: "", stock: 1 })
                       }
                     >
                       <PlusCircle /> Create New Variant
                     </Badge>
                   </div>
-
                   {errors.variants && (
                     <p className='text-red-500 text-sm'>Please add variants</p>
                   )}
-
                   {variantFields.map((field, index) => (
                     <div key={field.id} className='flex items-end gap-4'>
                       <Input
@@ -504,11 +508,10 @@ export default function CreateProduct({
                 </div>
               </div>
 
-              {/* Right Column */}
               <div className='flex flex-col flex-1 gap-6'>
                 <FormRhfSelect
-                  control={control}
                   name='brandId'
+                  control={control}
                   label='Brand'
                   options={allBrands}
                   placeholder='Select Brand'
@@ -516,22 +519,31 @@ export default function CreateProduct({
                   onCreateNew={() => openDialog("brand")}
                 />
                 <FormRhfSelect
-                  control={control}
                   name='categoryId'
-                  label='Category'
+                  control={control}
+                  label='Root Category'
                   options={allCategories}
+                  placeholder='Select Root Category'
+                />
+
+                <FormRhfSelect
+                  name='subCategoryId'
+                  control={control}
+                  label='Category'
+                  options={allSubCategories}
                   placeholder='Select Category'
                   createNew
-                  onCreateNew={() => openDialog("category")}
+                  onCreateNew={() => openDialog("subcategory")}
+                  disabled={!watchCategory}
                 />
                 <FormRhfSelect
+                  name='subSubCategoryId'
                   control={control}
-                  name='subCategoryId'
-                  label='Subcategory'
-                  options={allSubCategories}
+                  label='SubCategory'
+                  options={allSubSubCategories}
                   placeholder='Select Subcategory'
                   createNew
-                  onCreateNew={() => openDialog("subCategory")}
+                  onCreateNew={() => openDialog("subSubCategory")}
                   disabled={!watchCategory}
                 />
                 <FormRhfTextarea
@@ -542,7 +554,6 @@ export default function CreateProduct({
                   height={125}
                 />
 
-                {/* ---------------- Images ---------------- */}
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor='product-images'>
@@ -558,6 +569,7 @@ export default function CreateProduct({
                     {errors.images && <FieldError errors={[errors.images]} />}
                   </Field>
                 </FieldGroup>
+
                 <div className='flex flex-wrap gap-2 mt-2'>
                   {images.map((img, index) => (
                     <div
@@ -583,9 +595,8 @@ export default function CreateProduct({
               </div>
             </div>
 
-            {/* ---------------- Submit ---------------- */}
-            <Button type='submit' disabled={isSubmitting}>
-              {isSubmitting ? (
+            <Button type='submit' disabled={isSubmitting || isLoading}>
+              {isSubmitting || isLoading ? (
                 <LoadingSpinner text='Creating...' />
               ) : (
                 "Create Product"
@@ -608,15 +619,15 @@ export default function CreateProduct({
           isSubmitting={isLoading}
           isSubmittingText={currentDialog.submittingText}
         >
-          {dialogType === "subCategory" && (
+          {dialogType === "subcategory" && (
             <Field>
-              <Label>Select Category</Label>
+              <Label>Select Root Category</Label>
               <Select
                 value={selectedCategory ?? ""}
                 onValueChange={setSelectedCategory}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder='Select Category' />
+                  <SelectValue placeholder='Select Root Category' />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -630,6 +641,29 @@ export default function CreateProduct({
               </Select>
             </Field>
           )}
+          {dialogType === "subSubCategory" && (
+            <Field>
+              <Label>Select Category</Label>
+              <Select
+                value={selectedSubCategory ?? ""}
+                onValueChange={setSelectedSubCategory}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder='Select Category' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {allSubCategories.map((option, i) => (
+                      <SelectItem key={i} value={option.value}>
+                        {namePerfect(option.label)}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+
           <Field>
             <Label>{currentDialog.label}</Label>
             <Input

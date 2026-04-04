@@ -7,14 +7,15 @@ export const categorySchema = z.object({
   name: z
     .string()
     .trim()
-    .min(3, { error: "Category name must be at least 3 characters" })
-    .max(50, { error: "Category name cannot exceed 50 characters" }),
+    .min(3, { message: "Category name must be at least 3 characters" })
+    .max(50, { message: "Category name cannot exceed 50 characters" }),
+  type: z.enum(["men", "women", "kids", "unisex", "beauty", "sports"]),
+  isActive: z.boolean().default(true),
   description: z
     .string()
     .trim()
-    .max(200, { error: "Description cannot exceed 200 characters" })
+    .max(200, { message: "Description cannot exceed 200 characters" })
     .optional(),
-  isActive: z.boolean().default(true),
 });
 
 export type CategoryInput = z.input<typeof categorySchema>;
@@ -26,13 +27,28 @@ export const subCategorySchema = z.object({
   name: z
     .string()
     .trim()
-    .min(3, { error: "Subcategory name must be at least 3 characters" })
-    .max(50, { error: "Subcategory name cannot exceed 50 characters" }),
+    .min(3, { message: "Subcategory name must be at least 3 characters" })
+    .max(50, { message: "Subcategory name cannot exceed 50 characters" }),
   categoryId: z.string({ error: "Category is required" }),
   isActive: z.boolean().default(true),
 });
 
 export type SubCategoryInput = z.input<typeof subCategorySchema>;
+
+//////////////////////
+// SUBSUBCATEGORY
+//////////////////////
+export const subSubCategorySchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(3, { message: "Sub-subcategory name must be at least 3 characters" })
+    .max(50, { message: "Sub-subcategory name cannot exceed 50 characters" }),
+  subCategoryId: z.string({ error: "Subcategory is required" }),
+  isActive: z.boolean().default(true),
+});
+
+export type SubSubCategoryInput = z.input<typeof subSubCategorySchema>;
 
 //////////////////////
 // BRAND
@@ -41,8 +57,8 @@ export const brandSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, { error: "Brand name must be at least 2 characters" })
-    .max(50, { error: "Brand name cannot exceed 50 characters" }),
+    .min(2, { message: "Brand name must be at least 2 characters" })
+    .max(50, { message: "Brand name cannot exceed 50 characters" }),
   isActive: z.boolean().default(true),
 });
 
@@ -56,17 +72,17 @@ export const productVariantSchema = z.object({
   size: z
     .string()
     .trim()
-    .min(1, { error: "Size is required" })
-    .max(20, { error: "Size cannot exceed 20 characters" }),
+    .min(1, { message: "Size is required" })
+    .max(20, { message: "Size cannot exceed 20 characters" }),
   color: z
     .string()
     .trim()
-    .min(3, { error: "Color must be at least 3 characters" })
-    .max(30, { error: "Color cannot exceed 30 characters" }),
+    .min(3, { message: "Color must be at least 3 characters" })
+    .max(30, { message: "Color cannot exceed 30 characters" }),
   stock: z
     .number({ error: "Stock must be a number" })
-    .int({ error: "Stock must be an integer" })
-    .nonnegative({ error: "Stock cannot be negative" }),
+    .int({ message: "Stock must be an integer" })
+    .nonnegative({ message: "Stock cannot be negative" }),
 });
 
 export type ProductVariantInput = z.input<typeof productVariantSchema>;
@@ -79,23 +95,24 @@ export const productSchema = z
     name: z
       .string()
       .trim()
-      .min(3, { error: "Product name must be at least 3 characters" })
-      .max(100, { error: "Product name cannot exceed 100 characters" }),
+      .min(3, { message: "Product name must be at least 3 characters" })
+      .max(100, { message: "Product name cannot exceed 100 characters" }),
     description: z
       .string()
       .trim()
-      .min(10, { error: "Description must be at least 10 characters" })
-      .max(1000, { error: "Description cannot exceed 1000 characters" }),
+      .min(10, { message: "Description must be at least 10 characters" })
+      .max(1000, { message: "Description cannot exceed 1000 characters" }),
     price: z
       .number({ error: "Price must be a number" })
-      .positive({ error: "Price must be positive" }),
+      .positive({ message: "Price must be positive" }),
     discountPrice: z
       .number({ error: "Discount must be a number" })
-      .positive({ error: "Discount must be positive" })
+      .positive({ message: "Discount must be positive" })
       .optional(),
     gender: z.enum(["men", "women", "unisex"]),
     categoryId: z.string({ error: "Category is required" }),
     subCategoryId: z.string({ error: "Subcategory is required" }),
+    subSubCategoryId: z.string().optional(),
     brandId: z.string().optional(),
     images: z
       .array(
@@ -104,33 +121,12 @@ export const productSchema = z
           url: z.string({ error: "Image URL is required" }).trim(),
         }),
       )
-      .min(1, "At least one image is required"),
+      .min(1, { message: "At least one image is required" }),
     isFeatured: z.boolean().default(false),
     isNew: z.boolean().default(true),
     isActive: z.boolean().default(true),
     variants: z
-      .array(
-        z.object({
-          id: z.string().optional(),
-          size: z
-            .string()
-            .trim()
-            .toLowerCase()
-            .min(1, "Size is required")
-            .max(20, "Size cannot exceed 20 characters"),
-          color: z
-            .string()
-            .trim()
-            .toLowerCase()
-            .min(3, "Color is required")
-            .max(30, "Color cannot exceed 30 characters"),
-          stock: z
-            .number()
-            .int()
-            .min(0, "Stock is required")
-            .max(100000, "Stock cannot exceed 100,000"),
-        }),
-      )
+      .array(productVariantSchema)
       .min(1)
       .max(100)
       .refine(
@@ -138,7 +134,7 @@ export const productSchema = z
           new Set(
             variants.map(
               (v) =>
-                `${v.size.trim().toLocaleLowerCase()}.-${v.color.trim().toLocaleLowerCase()}`,
+                `${v.size.trim().toLowerCase()}-${v.color.trim().toLowerCase()}`,
             ),
           ).size === variants.length,
         {
@@ -147,7 +143,6 @@ export const productSchema = z
         },
       ),
   })
-  // Ensure discountPrice < price
   .refine(
     (data) => data.discountPrice == null || data.discountPrice < data.price,
     {

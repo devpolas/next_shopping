@@ -1,3 +1,22 @@
 {
-  "cSpell.words": ["COMMERZ", "googleusercontent", "NEXTSHOP", "nums"]
+  "cSpell.words": [
+    "COMMERZ",
+    "eyewear",
+    "googleusercontent",
+    "NEXTSHOP",
+    "nums",
+    "SUBSUBCATEGORY"
+  ],
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "local",
+      "database": "localdb",
+      "username": "pcb"
+    }
+  ]
 }

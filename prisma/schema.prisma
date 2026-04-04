@@ -132,18 +132,38 @@ model Verification {
 // CATEGORY SYSTEM
 //////////////////////
 
+enum CategoryType {
+  men      
+  women    
+  kids    
+  unisex  
+  beauty  
+  sports  
+  bags    
+  jewelry  
+  watches   
+  eyewear 
+  winter   
+  summer   
+  festive  
+  formal    
+}
+
 model Category {
   id          String   @id @default(uuid())
-  name        String   @unique
-  slug        String   
-  description String?
+  name        String
+  slug        String   @unique
+  type        CategoryType
   isActive    Boolean  @default(true)
+  description String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   subCategories SubCategory[]
   products      Product[]
+
+  @@index([type])
 }
 
 model SubCategory {
@@ -151,17 +171,37 @@ model SubCategory {
   name       String
   slug       String
   categoryId String
+
   isActive   Boolean  @default(true)
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subSubCategories SubSubCategory[]
   products   Product[]
 
   @@unique([slug, categoryId])
+  @@index([categoryId])
 }
 
+model SubSubCategory {
+  id            String   @id @default(uuid())
+  name          String
+  slug          String
+  subCategoryId String
+
+  isActive      Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  products      Product[]
+
+  @@unique([slug, subCategoryId])
+  @@index([subCategoryId])
+}
 model Brand {
   id        String   @id @default(uuid())
   name      String   @unique
@@ -191,18 +231,19 @@ model Product {
   categoryId    String
   subCategoryId String
   brandId       String?
+  subSubCategoryId       String?
 
   isFeatured    Boolean @default(false)
   isNew         Boolean @default(true)
   isActive      Boolean @default(true)
 
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime 
 
   category      Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Restrict)
+  subSubCategory   SubSubCategory? @relation(fields: [subSubCategoryId], references: [id])
   brand         Brand?      @relation(fields: [brandId], references: [id], onDelete: SetNull)
-
   images        ProductImage[]
   variants      ProductVariant[]
   reviews       Review[]
