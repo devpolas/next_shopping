@@ -323,6 +323,9 @@ export default function CreateProduct({
         return;
       }
 
+      setValue("categoryId", "");
+      setValue("subCategoryId", "");
+
       router.refresh();
       toast.success("Created successfully");
       config.setValue("");
