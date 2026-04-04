@@ -142,12 +142,12 @@ export default function CreateProduct({
     value: sc.id,
   }));
 
-  const allSubSubCategories = subCategories
-    .flatMap((sc) => sc.subSubCategories || [])
-    .map((ssc) => ({
-      label: ssc.name,
-      value: ssc.id,
-    }));
+  // const allSubSubCategories = subCategories
+  //   .flatMap((sc) => sc.subSubCategories || [])
+  //   .map((ssc) => ({
+  //     label: ssc.name,
+  //     value: ssc.id,
+  //   }));
 
   // ---------------- Dialog Config ----------------
   const dialogConfig = {
@@ -215,6 +215,14 @@ export default function CreateProduct({
   const watchCategory = watch("categoryId");
   const watchSubCategory = watch("subCategoryId");
 
+  const allSubSubCategories =
+    subCategories
+      .find((sc) => sc.id === watchSubCategory)
+      ?.subSubCategories?.map((ssc) => ({
+        label: ssc.name,
+        value: ssc.id,
+      })) || [];
+
   // ---------------- Effects ----------------
   useEffect(() => setMounted(true), []);
 
@@ -233,6 +241,7 @@ export default function CreateProduct({
 
     fetchSubcategory();
     setValue("subCategoryId", "");
+    setValue("subSubCategoryId", "");
   }, [watchCategory, setValue]);
 
   // Clean up object URLs on unmount
@@ -544,7 +553,7 @@ export default function CreateProduct({
                   placeholder='Select Subcategory'
                   createNew
                   onCreateNew={() => openDialog("subSubCategory")}
-                  disabled={!watchCategory}
+                  disabled={!watchSubCategory}
                 />
                 <FormRhfTextarea
                   control={control}
