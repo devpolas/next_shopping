@@ -11,7 +11,6 @@ type CategoryData = {
 };
 
 const categoriesData: CategoryData[] = [
-  // --- Your categories here ---
   {
     name: "Men",
     type: CategoryType.men,
@@ -77,7 +76,155 @@ const categoriesData: CategoryData[] = [
       },
     ],
   },
-  // ... add all other categories (Kids, Unisex, Beauty, etc.) ...
+  {
+    name: "Kids",
+    type: CategoryType.kids,
+    subCategories: [
+      {
+        name: "Boy",
+        subSubCategories: [
+          { name: "T-Shirts" },
+          { name: "Shorts" },
+          { name: "Jeans" },
+        ],
+      },
+      {
+        name: "Girl",
+        subSubCategories: [
+          { name: "Tops" },
+          { name: "Dresses" },
+          { name: "Skirts" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Unisex",
+    type: CategoryType.unisex,
+    subCategories: [
+      {
+        name: "Accessories",
+        subSubCategories: [
+          { name: "T-Shirts" },
+          { name: "Hoodies" },
+          { name: "Sneakers" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Beauty",
+    type: CategoryType.beauty,
+    subCategories: [
+      {
+        name: "Skincare",
+        subSubCategories: [{ name: "Face Creams" }, { name: "Serums" }],
+      },
+      {
+        name: "Makeup",
+        subSubCategories: [{ name: "Lipsticks" }, { name: "Foundations" }],
+      },
+    ],
+  },
+  {
+    name: "Sports",
+    type: CategoryType.sports,
+    subCategories: [
+      {
+        name: "Sportswear",
+        subSubCategories: [{ name: "Jerseys" }, { name: "Shorts" }],
+      },
+      {
+        name: "Equipment",
+        subSubCategories: [{ name: "Balls" }, { name: "Rackets" }],
+      },
+    ],
+  },
+  {
+    name: "Bags",
+    type: CategoryType.bags,
+    subCategories: [
+      {
+        name: "Backpacks",
+        subSubCategories: [
+          { name: "Laptop Backpacks" },
+          { name: "Casual Backpacks" },
+        ],
+      },
+      {
+        name: "Handbags",
+        subSubCategories: [{ name: "Totes" }, { name: "Clutches" }],
+      },
+    ],
+  },
+  {
+    name: "Jewelry",
+    type: CategoryType.jewelry,
+    subCategories: [
+      {
+        name: "Necklaces",
+        subSubCategories: [{ name: "Chains" }, { name: "Pendants" }],
+      },
+      {
+        name: "Rings",
+        subSubCategories: [{ name: "Gold Rings" }, { name: "Silver Rings" }],
+      },
+    ],
+  },
+  {
+    name: "Watches",
+    type: CategoryType.watches,
+    subCategories: [
+      {
+        name: "Men Watches",
+        subSubCategories: [{ name: "Analog" }, { name: "Digital" }],
+      },
+      {
+        name: "Women Watches",
+        subSubCategories: [{ name: "Analog" }, { name: "Smartwatches" }],
+      },
+    ],
+  },
+  {
+    name: "Eyewear",
+    type: CategoryType.eyewear,
+    subCategories: [
+      { name: "Sunglasses", subSubCategories: [] },
+      { name: "Optical Glasses", subSubCategories: [] },
+    ],
+  },
+  {
+    name: "Winter",
+    type: CategoryType.winter,
+    subCategories: [
+      { name: "Jackets & Coats", subSubCategories: [] },
+      { name: "Sweaters", subSubCategories: [] },
+    ],
+  },
+  {
+    name: "Summer",
+    type: CategoryType.summer,
+    subCategories: [
+      { name: "T-Shirts", subSubCategories: [] },
+      { name: "Shorts", subSubCategories: [] },
+    ],
+  },
+  {
+    name: "Festive",
+    type: CategoryType.festive,
+    subCategories: [
+      { name: "Party Wear", subSubCategories: [] },
+      { name: "Traditional Wear", subSubCategories: [] },
+    ],
+  },
+  {
+    name: "Formal",
+    type: CategoryType.formal,
+    subCategories: [
+      { name: "Shirts", subSubCategories: [] },
+      { name: "Trousers", subSubCategories: [] },
+    ],
+  },
 ];
 
 // ---------------- Helpers ----------------
