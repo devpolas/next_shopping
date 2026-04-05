@@ -1,6 +1,7 @@
-import { CategoryType } from "@/lib/generated/prisma/enums";
-
 // Gender & CategoryType enums
+
+import { CategoryType } from "@/prisma/generated/prisma/enums";
+
 export type Gender = "men" | "women" | "unisex";
 
 // Category interface
