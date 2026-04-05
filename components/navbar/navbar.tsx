@@ -1,37 +1,49 @@
+"use client";
+import React, { useEffect, useState } from "react";
 import NavCategory from "./nav-category";
 import NavigationMenu from "./navigation-menu";
-
-const categories = [
-  {
-    name: "Topwear",
-    slug: "topwear",
-    subcategory: [
-      {
-        name: "Men",
-        slug: "men",
-        subcategory: [
-          { name: "T-Shirts", slug: "t-shirts" },
-          { name: "Shirts", slug: "shirts" },
-        ],
-      },
-      {
-        name: "Women",
-        slug: "women",
-        subcategory: [
-          { name: "Tops", slug: "tops" },
-          { name: "Dresses", slug: "dresses" },
-        ],
-      },
-    ],
-  },
-];
+import { getCategories } from "@/lib/actions/product.actions";
+import { Category } from "@/types/product";
 
 export default function Navbar() {
+  const [category, setCategory] = useState<Category[] | []>([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const response = await getCategories();
+      if (response.success && response.categories) {
+        setCategory(response.categories || []);
+      }
+    }
+    fetchCategories();
+  }, []);
+
+  const categories = React.useMemo(
+    () =>
+      category.map((c) => ({
+        name: c.name,
+        slug: c.slug,
+        subcategory:
+          c.subCategories?.map((sc) => ({
+            name: sc.name,
+            slug: sc.slug,
+            subcategory:
+              sc.subSubCategories?.map((ssc) => ({
+                name: ssc.name,
+                slug: ssc.slug,
+              })) || [],
+          })) || [],
+      })),
+    [category],
+  );
+
   return (
     <nav className='w-full'>
-      <div className='flex flex-col bg-background px-4 md:px-8'>
+      <div className='flex flex-col bg-background px-4 md:px-8 py-1.5'>
         <NavigationMenu />
-        <NavCategory categories={categories} />
+        <div className='mx-auto'>
+          <NavCategory categories={categories} />
+        </div>
       </div>
     </nav>
   );
