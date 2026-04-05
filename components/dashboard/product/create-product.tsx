@@ -112,7 +112,7 @@ export default function CreateProduct({
   categories: Category[];
 }) {
   const router = useRouter();
-  const session = authClient.useSession();
+  // const session = authClient.useSession();
   const [mounted, setMounted] = useState(false);
 
   // Dialog state
@@ -396,7 +396,7 @@ export default function CreateProduct({
     }
   };
 
-  if (!mounted || session.isPending) return <Loading />;
+  if (!mounted) return <Loading />;
 
   const currentDialog = dialogType ? dialogConfig[dialogType] : null;
 
