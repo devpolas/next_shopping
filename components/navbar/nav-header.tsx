@@ -55,7 +55,7 @@ function Navigation() {
   );
 }
 
-export default function NavigationMenu() {
+export default function NavHeader() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Navigation />

@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import NavCategory from "./nav-category";
-import NavigationMenu from "./navigation-menu";
 import { getCategories } from "@/lib/actions/product.actions";
 import { Category } from "@/types/product";
 import { useIsMobile } from "@/hooks/use-mobile";
+import NavCategory from "./nav-category";
+import NavHeader from "./nav-header";
 
-export default function Navbar() {
+export function Navbar() {
   const [category, setCategory] = useState<Category[] | []>([]);
   const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
@@ -50,12 +50,11 @@ export default function Navbar() {
   return (
     <nav className='relative w-full'>
       <div className='flex flex-col bg-background px-4 md:px-8'>
-        <NavigationMenu />
-
+        <NavHeader />
         <hr />
 
         {!isMobile && (
-          <NavCategory categories={categories} isLoading={loading} />
+          <NavCategory isLoading={loading} categories={categories} />
         )}
       </div>
     </nav>

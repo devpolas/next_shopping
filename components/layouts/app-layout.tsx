@@ -1,5 +1,5 @@
 import MobileDownNav from "../navbar/mobile-down-nav";
-import Navbar from "../navbar/navbar";
+import { Navbar } from "../navbar/navbar";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (

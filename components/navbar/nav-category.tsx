@@ -88,10 +88,14 @@ export default function NavCategory({
 }) {
   return (
     <section className='flex py-1'>
-      <Menubar className='flex-1 justify-between border-0'>
-        {isLoading && (
-          <Skeleton className='z-100 w-full h-6 2xl:h-8 animate-pulse' />
-        )}
+      <Menubar className='flex md:flex-row flex-col flex-1 justify-between border-0'>
+        {isLoading &&
+          Array.from({ length: 14 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              className='z-100 w-full h-6 2xl:h-8 animate-pulse'
+            />
+          ))}
         {categories.length > 0 &&
           !isLoading &&
           categories.map((cat) => <CategoryMenu key={cat.slug} cat={cat} />)}
