@@ -1,15 +1,17 @@
 "use client";
-
-import * as React from "react";
 import Link from "next/link";
-
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+  Menubar,
+  MenubarContent,
+  MenubarGroup,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+} from "../ui/menubar";
+import { Skeleton } from "../ui/skeleton";
 
 type SubSubCategory = {
   name: string;
@@ -29,84 +31,71 @@ type Category = {
 };
 
 function CategoryMenu({ cat }: { cat: Category }) {
-  const [active, setActive] = React.useState<string>("");
-
-  React.useEffect(() => {
-    if (cat.subcategory.length > 0 && active === "") {
-      setActive(cat.subcategory[0].slug);
-    }
-  }, [cat.subcategory]);
-
   return (
-    <NavigationMenuItem>
-      <NavigationMenuTrigger className='font-semibold text-[16px]'>
+    <MenubarMenu>
+      <MenubarTrigger className='p-0 lg:px-0.5 xl:px-4 lg:py-1 xl:py-1.5 text-[10px] lg:text-sm 2xl:text-lg xl:tracking-widest hover:cursor-pointer'>
         {cat.name}
-      </NavigationMenuTrigger>
-
-      <NavigationMenuContent className='p-0'>
-        <div className='flex w-[500px]'>
-          {/* LEFT */}
-          <div className='bg-muted w-1/3'>
-            {cat.subcategory.map((sc) => (
-              <div
-                key={sc.slug}
-                onMouseEnter={() => setActive(sc.slug)}
-                className={`px-4 py-2 cursor-pointer transition ${
-                  active === sc.slug ? "bg-background font-semibold" : ""
-                }`}
-              >
-                {sc.name}
-              </div>
-            ))}
-          </div>
-
-          {/* RIGHT */}
-          {cat.subcategory.length > 0 && (
-            <div className='p-4 w-2/3'>
-              {cat.subcategory.length > 0 &&
-                cat.subcategory
-                  .filter((sc) => sc.slug === active)
-                  .map((sc) => (
-                    <ul key={sc.slug} className='space-y-1'>
-                      {sc.subcategory.map((ssc) => (
-                        <li key={ssc.slug}>
-                          <Link
-                            href={`/product?category=${encodeURIComponent(
-                              cat.slug,
-                            )}&subCategory=${encodeURIComponent(
-                              sc.name,
-                            )}&subSubCategory=${encodeURIComponent(ssc.name)}`}
-                            prefetch={false}
-                            className='block hover:bg-muted px-2 py-1 rounded hover:underline transition'
-                          >
-                            {ssc.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  ))}
-            </div>
-          )}
-        </div>
-      </NavigationMenuContent>
-    </NavigationMenuItem>
+      </MenubarTrigger>
+      <MenubarContent>
+        {cat.subcategory.map((sc) => (
+          <MenubarGroup key={sc.slug}>
+            <MenubarSub>
+              {sc.subcategory.length > 0 ? (
+                <MenubarSubTrigger className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm hover:cursor-pointer'>
+                  {sc.name}
+                </MenubarSubTrigger>
+              ) : (
+                <MenubarItem className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm'>
+                  <Link
+                    href={`/product?category=${encodeURI(cat.name)}&subCategory=${encodeURI(sc.name)}`}
+                  >
+                    {sc.name}
+                  </Link>
+                </MenubarItem>
+              )}
+              {sc.subcategory.length > 0 && (
+                <MenubarSubContent>
+                  <MenubarGroup>
+                    {sc.subcategory.map((ssc) => (
+                      <MenubarItem
+                        key={ssc.name}
+                        className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm'
+                      >
+                        <Link
+                          href={`/product?category=${encodeURI(cat.name)}&subCategory=${encodeURI(sc.name)}&subSubCategory=${encodeURI(ssc.name)}`}
+                        >
+                          {ssc.name}
+                        </Link>
+                      </MenubarItem>
+                    ))}
+                  </MenubarGroup>
+                </MenubarSubContent>
+              )}
+            </MenubarSub>
+          </MenubarGroup>
+        ))}
+      </MenubarContent>
+    </MenubarMenu>
   );
 }
 
 export default function NavCategory({
   categories,
+  isLoading,
 }: {
   categories: Category[];
+  isLoading: boolean;
 }) {
   return (
-    <div className='flex gap-4'>
-      {categories.map((cat) => (
-        <NavigationMenu key={cat.slug}>
-          <NavigationMenuList>
-            <CategoryMenu key={cat.slug} cat={cat} />
-          </NavigationMenuList>
-        </NavigationMenu>
-      ))}
-    </div>
+    <section className='flex py-1'>
+      <Menubar className='flex-1 justify-between border-0'>
+        {isLoading && (
+          <Skeleton className='z-100 w-full h-6 2xl:h-8 animate-pulse' />
+        )}
+        {categories.length > 0 &&
+          !isLoading &&
+          categories.map((cat) => <CategoryMenu key={cat.slug} cat={cat} />)}
+      </Menubar>
+    </section>
   );
 }

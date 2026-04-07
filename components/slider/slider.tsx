@@ -30,7 +30,7 @@ export default function Slider() {
 
   return (
     <div
-      className='relative mt-4 w-full h-[480px] overflow-hidden cursor-none'
+      className='relative mt-2 w-full h-[480px] overflow-hidden cursor-none'
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       onMouseMove={handleMouseMove}

@@ -1,6 +1,5 @@
 "use server";
 
-import prisma from "../db";
 import slugify from "slugify";
 import { ProductInput, productSchema } from "../validators/product-schema";
 
@@ -11,7 +10,8 @@ import {
   SubCategory,
   SubSubCategory,
 } from "@/types/product";
-import { CategoryType } from "@/prisma/generated/prisma/enums";
+import prisma from "../prisma";
+import { CategoryType } from "@/app/generated/prisma/enums";
 
 interface ResponseInterface {
   success: boolean;

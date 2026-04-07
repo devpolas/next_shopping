@@ -13,8 +13,8 @@ function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <div className='relative'>
-      <div className='z-10 relative flex justify-between items-center gap-4 py-4'>
+    <div>
+      <div className='flex justify-between items-center gap-4 pt-4 pb-3'>
         <div className='flex flex-row items-center gap-4'>
           <Logo />
           <ThemeSwitcher />

@@ -32,22 +32,22 @@ export async function proxy(request: NextRequest) {
 
   const isLoggedIn = Boolean(sessionCookie);
 
-  // if (isLoggedIn && AUTH_PATH.includes(pathname)) {
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
+  if (isLoggedIn && AUTH_PATH.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
 
-  // if (isLoggedIn && pathname.startsWith("/dashboard")) {
-  //   if (!isAdminOrModerator) {
-  //     return NextResponse.redirect(new URL("/", request.url));
-  //   }
-  // }
+  if (isLoggedIn && pathname.startsWith("/dashboard")) {
+    if (!isAdminOrModerator) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
 
-  // if (!isLoggedIn && !AUTH_PATH.includes(pathname)) {
-  //   const callbackURL = safeRedirect(pathname + search);
-  //   const loginUrl = new URL("/signin", request.url);
-  //   loginUrl.searchParams.set("callbackURL", callbackURL);
-  //   return NextResponse.redirect(loginUrl);
-  // }
+  if (!isLoggedIn && !AUTH_PATH.includes(pathname)) {
+    const callbackURL = safeRedirect(pathname + search);
+    const loginUrl = new URL("/signin", request.url);
+    loginUrl.searchParams.set("callbackURL", callbackURL);
+    return NextResponse.redirect(loginUrl);
+  }
 
   return NextResponse.next();
 }

@@ -1,5 +1,6 @@
 "use server";
-import prisma from "../db";
+
+import prisma from "../prisma";
 
 export async function userExits(email: string) {
   try {

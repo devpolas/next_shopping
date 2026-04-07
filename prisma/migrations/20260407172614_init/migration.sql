@@ -13,6 +13,9 @@ CREATE TYPE "PaymentMethod" AS ENUM ('cod', 'stripe', 'ssl_commerz');
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'success', 'failed');
 
+-- CreateEnum
+CREATE TYPE "CategoryType" AS ENUM ('men', 'women', 'kids', 'unisex', 'beauty', 'sports', 'bags', 'jewelry', 'watches', 'eyewear', 'winter', 'summer', 'festive', 'formal');
+
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
@@ -81,8 +84,9 @@ CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
-    "description" TEXT,
+    "type" "CategoryType" NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -100,6 +104,19 @@ CREATE TABLE "SubCategory" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "SubCategory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SubSubCategory" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "subCategoryId" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SubSubCategory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -125,6 +142,7 @@ CREATE TABLE "Product" (
     "categoryId" TEXT NOT NULL,
     "subCategoryId" TEXT NOT NULL,
     "brandId" TEXT,
+    "subSubCategoryId" TEXT,
     "isFeatured" BOOLEAN NOT NULL DEFAULT false,
     "isNew" BOOLEAN NOT NULL DEFAULT true,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -275,7 +293,19 @@ CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 CREATE UNIQUE INDEX "Category_slug_key" ON "Category"("slug");
 
 -- CreateIndex
+CREATE INDEX "Category_type_idx" ON "Category"("type");
+
+-- CreateIndex
+CREATE INDEX "SubCategory_categoryId_idx" ON "SubCategory"("categoryId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "SubCategory_slug_categoryId_key" ON "SubCategory"("slug", "categoryId");
+
+-- CreateIndex
+CREATE INDEX "SubSubCategory_subCategoryId_idx" ON "SubSubCategory"("subCategoryId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SubSubCategory_slug_subCategoryId_key" ON "SubSubCategory"("slug", "subCategoryId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Brand_name_key" ON "Brand"("name");
@@ -356,10 +386,16 @@ ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "SubCategory" ADD CONSTRAINT "SubCategory_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "SubSubCategory" ADD CONSTRAINT "SubSubCategory_subCategoryId_fkey" FOREIGN KEY ("subCategoryId") REFERENCES "SubCategory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_subCategoryId_fkey" FOREIGN KEY ("subCategoryId") REFERENCES "SubCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_subSubCategoryId_fkey" FOREIGN KEY ("subSubCategoryId") REFERENCES "SubSubCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand"("id") ON DELETE SET NULL ON UPDATE CASCADE;

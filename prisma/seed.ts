@@ -1,5 +1,5 @@
-import prisma from "@/lib/db";
-import { CategoryType } from "@/lib/generated/prisma/enums";
+import { CategoryType } from "@/app/generated/prisma/enums";
+import prisma from "@/lib/prisma";
 import slugify from "slugify";
 
 type SubSubCategoryData = { name: string };

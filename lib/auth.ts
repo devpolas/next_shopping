@@ -3,12 +3,12 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins";
-import prisma from "./db";
 import { sendEmail } from "./actions/email.actions";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 
 import { z } from "zod";
 import { signOut } from "./actions/auth.actions";
+import prisma from "./prisma";
 
 const emailSchema = z.email();
 

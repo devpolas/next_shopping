@@ -38,7 +38,6 @@ export default function SigninForm() {
     setIsError("");
     try {
       const response = await signin(formData);
-      console.log(response);
       if (response.success) {
         toast.success("Logged in successfully 🎉");
         await new Promise((resolve) => setTimeout(resolve, 200)); // small delay
