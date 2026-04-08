@@ -5,9 +5,11 @@ export default function MobileLogo() {
     <Link
       aria-label='Go to homepage'
       href='/'
-      className='flex items-center gap-2 font-bold text-green-600 text-lg'
+      className='flex items-center gap-2 font-bold text-green-600 text-xl'
     >
-      NEXTSHOP
+      <strong>
+        <em>NEXTSHOP</em>
+      </strong>
     </Link>
   );
 }

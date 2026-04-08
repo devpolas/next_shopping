@@ -48,7 +48,7 @@ export default function Slider() {
       {/* CUSTOM CURSOR */}
       {isHover && (
         <div
-          className='z-50 absolute bg-black/50 px-3 py-2 rounded-full text-white text-2xl transition-transform duration-75 pointer-events-none'
+          className='hidden z-50 absolute lg:flex bg-black/50 px-3 py-2 rounded-full text-white text-2xl transition-transform duration-75 lg:pointer-events-none'
           style={{
             left: position.x,
             top: position.y,
