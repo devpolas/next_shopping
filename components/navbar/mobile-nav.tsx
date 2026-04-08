@@ -8,9 +8,6 @@ import {
 } from "@/components/ui/sheet";
 import { ChevronDownIcon, Menu } from "lucide-react";
 import MobileLogo from "../logo/logo-mobile";
-import React, { useEffect, useState } from "react";
-import { getCategories } from "@/lib/actions/product.actions";
-import { Category } from "@/types/product";
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,46 +16,10 @@ import {
 import Link from "next/link";
 import { Button } from "../ui/button";
 import Loading from "@/app/loading";
+import useNavData from "@/hooks/use-nav-data";
 
 export default function MobileNav() {
-  const [category, setCategory] = useState<Category[] | []>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        setLoading(true);
-        const response = await getCategories();
-        if (response.success && response.categories) {
-          setCategory(response.categories);
-        }
-      } catch (err) {
-        console.error("Categories fetch failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCategories();
-  }, []);
-
-  const categories = React.useMemo(
-    () =>
-      category.map((c) => ({
-        name: c.name,
-        slug: c.slug,
-        subcategory:
-          c.subCategories?.map((sc) => ({
-            name: sc.name,
-            slug: sc.slug,
-            subcategory:
-              sc.subSubCategories?.map((ssc) => ({
-                name: ssc.name,
-                slug: ssc.slug,
-              })) || [],
-          })) || [],
-      })),
-    [category],
-  );
+  const { loading, categories } = useNavData();
 
   return (
     <Sheet>
