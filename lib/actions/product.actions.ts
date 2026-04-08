@@ -103,6 +103,7 @@ export async function getCategories(): Promise<{
   categories?: Category[];
   message?: string;
 }> {
+  "use cache";
   try {
     const categories = await prisma.category.findMany({
       include: { subCategories: { include: { subSubCategories: true } } },

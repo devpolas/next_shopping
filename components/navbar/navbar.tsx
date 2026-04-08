@@ -11,9 +11,8 @@ export function Navbar() {
 
   return (
     <nav className='relative w-full'>
-      <div className='flex flex-col bg-background px-4 md:px-8'>
+      <div className='flex flex-col bg-background px-2 md:px-10'>
         <NavHeader />
-        <hr />
 
         {!isMobile && (
           <NavCategory isLoading={loading} categories={categories} />
