@@ -20,18 +20,18 @@ export default function ShowProductImage({ img }: { img: ProductImage[] }) {
   }
 
   return (
-    <div className='w-full'>
+    <div className='p-4 border border-border rounded-md w-full'>
       <div className='flex flex-row gap-4'>
         {/* Thumbnails */}
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-2'>
           {img.map((item) => (
             <div
               key={item.url}
-              className='relative w-16 h-24 hover:cursor-pointer'
+              className='relative border border-border rounded w-14 h-16 hover:cursor-pointer'
               onMouseEnter={() => handleMouseIn(item.url)}
             >
               <CldImage
-                className='object-cover'
+                className='object-contain'
                 fill
                 alt='product image'
                 src={item.url}
@@ -42,7 +42,7 @@ export default function ShowProductImage({ img }: { img: ProductImage[] }) {
         {/* Main Image */}
         <div className='relative flex-1 w-full h-96'>
           <CldImage
-            className='object-cover'
+            className='object-contain'
             fill
             alt='product image'
             src={currentImgUrl}

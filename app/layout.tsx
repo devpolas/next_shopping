@@ -43,7 +43,7 @@ export default function RootLayout({
     >
       <head />
       <body
-        className='bg-muted h-full'
+        className='h-full'
         cz-shortcut-listen='true'
         data-new-gr-c-s-check-loaded='14.1279.0'
         data-gr-ext-installed=''
