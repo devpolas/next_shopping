@@ -59,7 +59,7 @@ function CategoryMenu({ cat }: { cat: Category }) {
                     {sc.subcategory.map((ssc) => (
                       <MenubarItem
                         key={ssc.name}
-                        className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm'
+                        className='font-semibold text-[8px] lg:text-[10px] xl:text-sm'
                       >
                         <Link
                           href={`/product?category=${encodeURI(cat.name)}&subCategory=${encodeURI(sc.name)}&subSubCategory=${encodeURI(ssc.name)}`}
