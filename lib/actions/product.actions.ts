@@ -427,3 +427,37 @@ export async function isProductExists(
     return { success: false, message: "Something went wrong" };
   }
 }
+
+export async function getProduct(
+  id: string,
+): Promise<{ success: boolean; message?: string; product?: Product }> {
+  try {
+    const productResult = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        images: true,
+        brand: true,
+        category: true,
+        subCategory: true,
+        subSubCategory: true,
+        variants: true,
+      },
+    });
+    if (!productResult) {
+      return { success: false, message: "failed to fetch product" };
+    }
+
+    const product = {
+      ...productResult,
+      price: Number(productResult.price),
+      discountPrice: productResult.discountPrice
+        ? Number(productResult.discountPrice)
+        : null,
+    };
+
+    return { success: true, product };
+  } catch (error) {
+    console.error("Product fetch error", error);
+    return { success: false, message: "something went wrong" };
+  }
+}

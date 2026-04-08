@@ -1,3 +1,9 @@
+import AppLayout from "@/components/layouts/app-layout";
+
 export default function ProductPage() {
-  return <div>Product Page</div>;
+  return (
+    <AppLayout>
+      <h2>Product Page</h2>
+    </AppLayout>
+  );
 }
