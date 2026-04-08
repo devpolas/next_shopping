@@ -33,7 +33,7 @@ type Category = {
 function CategoryMenu({ cat }: { cat: Category }) {
   return (
     <MenubarMenu>
-      <MenubarTrigger className='p-0 lg:px-0.5 xl:px-4 lg:py-1 xl:py-1.5 text-[10px] lg:text-sm 2xl:text-lg xl:tracking-widest hover:cursor-pointer'>
+      <MenubarTrigger className='p-0 lg:px-0.5 xl:px-4 lg:py-1 xl:py-1.5 text-[10px] lg:text-sm 2xl:text-lg xl:tracking-wider hover:cursor-pointer'>
         {cat.name}
       </MenubarTrigger>
       <MenubarContent>
