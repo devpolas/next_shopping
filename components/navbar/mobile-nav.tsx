@@ -125,7 +125,7 @@ export default function MobileNav() {
                             </Button>
                           </CollapsibleTrigger>
                           <CollapsibleContent className='border-l-2'>
-                            <div className='flex flex-col gap-1 ml-4 p-1'>
+                            <div className='flex flex-col gap-2 ml-4 p-1'>
                               {sc.subcategory.map((ssc) => (
                                 <Link
                                   className='text-[16px]'
