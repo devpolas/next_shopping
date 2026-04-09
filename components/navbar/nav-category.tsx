@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import {
   Menubar,
@@ -11,69 +10,60 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "../ui/menubar";
-import { Skeleton } from "../ui/skeleton";
-
-type SubSubCategory = {
-  name: string;
-  slug: string;
-};
-
-type SubCategory = {
-  name: string;
-  slug: string;
-  subcategory: SubSubCategory[];
-};
-
-type Category = {
-  name: string;
-  slug: string;
-  subcategory: SubCategory[];
-};
+import { Category } from "@/types/product";
 
 function CategoryMenu({ cat }: { cat: Category }) {
+  const subCat = cat.subCategories ?? [];
   return (
-    <MenubarMenu value={cat.slug} key={cat.slug}>
+    <MenubarMenu value={cat.slug}>
       <MenubarTrigger className='p-0 lg:px-0.5 xl:px-4 lg:py-1 xl:py-1.5 text-[10px] lg:text-sm 2xl:text-lg xl:tracking-wider hover:cursor-pointer'>
         {cat.name}
       </MenubarTrigger>
       <MenubarContent>
-        {cat.subcategory.map((sc) => (
-          <MenubarGroup key={sc.slug}>
-            <MenubarSub>
-              {sc.subcategory.length > 0 ? (
-                <MenubarSubTrigger className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm hover:cursor-pointer'>
-                  {sc.name}
-                </MenubarSubTrigger>
-              ) : (
-                <MenubarItem className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm'>
-                  <Link
-                    href={`/product?category=${encodeURI(cat.name)}&subCategory=${encodeURI(sc.name)}`}
-                  >
+        {subCat.map((sc) => {
+          const subSubCat = sc.subSubCategories ?? [];
+          return (
+            <MenubarGroup key={sc.slug}>
+              <MenubarSub>
+                {subSubCat.length > 0 ? (
+                  <MenubarSubTrigger className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm hover:cursor-pointer'>
                     {sc.name}
-                  </Link>
-                </MenubarItem>
-              )}
-              {sc.subcategory.length > 0 && (
-                <MenubarSubContent>
-                  <MenubarGroup>
-                    {sc.subcategory.map((ssc) => (
-                      <MenubarItem
-                        key={ssc.name}
-                        className='font-semibold text-[8px] lg:text-[10px] xl:text-sm'
-                      >
-                        <Link
-                          href={`/product?category=${encodeURI(cat.name)}&subCategory=${encodeURI(sc.name)}&subSubCategory=${encodeURI(ssc.name)}`}
+                  </MenubarSubTrigger>
+                ) : (
+                  <MenubarItem
+                    asChild
+                    className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm hover:cursor-pointer'
+                  >
+                    <Link
+                      href={`/product?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sc.name)}`}
+                    >
+                      {sc.name}
+                    </Link>
+                  </MenubarItem>
+                )}
+                {subSubCat.length > 0 && (
+                  <MenubarSubContent>
+                    <MenubarGroup>
+                      {subSubCat.map((ssc) => (
+                        <MenubarItem
+                          asChild
+                          key={ssc.slug}
+                          className='font-semibold text-[8px] lg:text-[10px] xl:text-sm hover:cursor-pointer'
                         >
-                          {ssc.name}
-                        </Link>
-                      </MenubarItem>
-                    ))}
-                  </MenubarGroup>
-                </MenubarSubContent>
-              )}
-            </MenubarSub>
-          </MenubarGroup>
-        ))}
+                          <Link
+                            href={`/product?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sc.name)}&subSubCategory=${encodeURIComponent(ssc.name)}`}
+                          >
+                            {ssc.name}
+                          </Link>
+                        </MenubarItem>
+                      ))}
+                    </MenubarGroup>
+                  </MenubarSubContent>
+                )}
+              </MenubarSub>
+            </MenubarGroup>
+          );
+        })}
       </MenubarContent>
     </MenubarMenu>
   );
@@ -81,25 +71,15 @@ function CategoryMenu({ cat }: { cat: Category }) {
 
 export default function NavCategory({
   categories,
-  isLoading,
 }: {
   categories: Category[];
-  isLoading: boolean;
 }) {
   return (
     <section className='hidden md:flex py-1'>
       <Menubar className='flex md:flex-row flex-col flex-1 justify-between border-0'>
-        {isLoading &&
-          Array.from({ length: 14 }).map((_, i) => (
-            <Skeleton
-              key={i}
-              className='z-100 w-full h-6 2xl:h-8 animate-pulse'
-            />
-          ))}
-
-        {categories.length > 0 &&
-          !isLoading &&
-          categories.map((cat) => <CategoryMenu key={cat.slug} cat={cat} />)}
+        {categories.map((cat) => (
+          <CategoryMenu key={cat.slug} cat={cat} />
+        ))}
       </Menubar>
     </section>
   );

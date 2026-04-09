@@ -8,15 +8,16 @@ import { Search } from "./search";
 import { Suspense, useState } from "react";
 import { ThemeSwitcher } from "../theme/theme-switcher";
 import LoadingSpinner from "../spinner/loading-spinner";
+import { Category } from "@/types/product";
 
-function Navigation() {
+function Navigation({ categories }: { categories: Category[] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <div>
       <div className='flex justify-between items-center gap-4 pt-4 pb-3'>
         <div className='flex flex-row items-center gap-4'>
-          <Logo />
+          <Logo categories={categories} />
           <ThemeSwitcher />
         </div>
 
@@ -55,10 +56,10 @@ function Navigation() {
   );
 }
 
-export default function NavHeader() {
+export default function NavHeader({ categories }: { categories: Category[] }) {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <Navigation />
+      <Navigation categories={categories} />
     </Suspense>
   );
 }

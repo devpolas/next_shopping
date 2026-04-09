@@ -106,7 +106,7 @@ export default async function ProductDetailsPage({
           </div>
         </div>
         <div className='flex-1'>
-          <Card>
+          <Card className='bg-transparent'>
             <CardHeader>
               <CardTitle>
                 <p className='text-sm'>
@@ -129,7 +129,7 @@ export default async function ProductDetailsPage({
                 <Button size={"icon-sm"}>
                   <Minus />
                 </Button>
-                <Input className='w-20' type='number' />
+                <Input defaultValue={1} className='w-20' type='number' />
                 <Button size={"icon-sm"}>
                   <Plus />
                 </Button>

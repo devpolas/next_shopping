@@ -1,22 +1,20 @@
-"use client";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { getCategories } from "@/lib/actions/product.actions";
 import NavCategory from "./nav-category";
 import NavHeader from "./nav-header";
-import useNavData from "@/hooks/use-nav-data";
 
-export function Navbar() {
-  const isMobile = useIsMobile();
+export async function Navbar() {
+  const categoryResult = await getCategories();
 
-  const { loading, categories } = useNavData();
+  const categories = categoryResult.success
+    ? categoryResult.categories || []
+    : [];
 
   return (
     <nav className='relative w-full'>
       <div className='flex flex-col bg-background px-2 md:px-10'>
-        <NavHeader />
+        <NavHeader categories={categories} />
 
-        {!isMobile && (
-          <NavCategory isLoading={loading} categories={categories} />
-        )}
+        <NavCategory categories={categories} />
       </div>
     </nav>
   );

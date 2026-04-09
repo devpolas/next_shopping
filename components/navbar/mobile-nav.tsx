@@ -1,7 +1,7 @@
-"use client";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -15,12 +15,9 @@ import {
 } from "../ui/collapsible";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import Loading from "@/app/loading";
-import useNavData from "@/hooks/use-nav-data";
+import { Category } from "@/types/product";
 
-export default function MobileNav() {
-  const { loading, categories } = useNavData();
-
+export default function MobileNav({ categories }: { categories: Category[] }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -31,21 +28,17 @@ export default function MobileNav() {
       <SheetContent side='left'>
         <SheetHeader>
           <SheetTitle className='hidden'>Menu</SheetTitle>
+          <SheetDescription className='hidden'>Description</SheetDescription>
           <div className='flex justify-center items-center'>
             <MobileLogo />
           </div>
           <hr />
         </SheetHeader>
 
-        {loading && (
-          <div className='flex justify-center items-center'>
-            <Loading />
-          </div>
-        )}
-
-        {categories.length > 0 && !loading && (
-          <div className='flex flex-col gap-2 px-4 overflow-y-auto'>
-            {categories.map((cat) => (
+        <div className='flex flex-col gap-2 px-4 overflow-y-auto'>
+          {categories.map((cat) => {
+            const subCat = cat.subCategories ?? [];
+            return (
               <Collapsible key={cat.slug} className='group/collapsible'>
                 <CollapsibleTrigger asChild>
                   <Button variant='ghost' className='group w-full text-lg'>
@@ -55,23 +48,26 @@ export default function MobileNav() {
                 </CollapsibleTrigger>
                 <CollapsibleContent className='flex flex-col border-l-2'>
                   <div className='flex flex-col gap-1 ml-4 p-1'>
-                    {cat.subcategory.map(
-                      (sc) =>
-                        sc.subcategory.length === 0 && (
+                    {subCat.map((sc) => {
+                      const subSubCat = sc.subSubCategories ?? [];
+                      return (
+                        subSubCat.length === 0 && (
                           <Link
                             className='text-lg'
-                            href={`/product?category=${cat.name}&subCategory=${sc.name}`}
+                            href={`/product?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sc.name)}`}
                             key={sc.slug}
                           >
                             {sc.name}
                           </Link>
-                        ),
-                    )}
+                        )
+                      );
+                    })}
                   </div>
 
-                  {cat.subcategory.map(
-                    (sc) =>
-                      sc.subcategory.length > 0 && (
+                  {subCat.map((sc) => {
+                    const subSubCat = sc.subSubCategories ?? [];
+                    return (
+                      subSubCat.length > 0 && (
                         <Collapsible
                           key={sc.slug}
                           className='group/collapsible ml-4'
@@ -87,10 +83,10 @@ export default function MobileNav() {
                           </CollapsibleTrigger>
                           <CollapsibleContent className='border-l-2'>
                             <div className='flex flex-col gap-2 ml-4 p-1'>
-                              {sc.subcategory.map((ssc) => (
+                              {subSubCat.map((ssc) => (
                                 <Link
                                   className='text-[16px]'
-                                  href={`/product?category=${cat.name}&subCategory=${sc.name}&subSubCategory=${ssc.name}`}
+                                  href={`/product?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sc.name)}&subSubCategory=${encodeURIComponent(ssc.name)}`}
                                   key={ssc.slug}
                                 >
                                   {ssc.name}
@@ -99,13 +95,14 @@ export default function MobileNav() {
                             </div>
                           </CollapsibleContent>
                         </Collapsible>
-                      ),
-                  )}
+                      )
+                    );
+                  })}
                 </CollapsibleContent>
               </Collapsible>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </SheetContent>
     </Sheet>
   );
