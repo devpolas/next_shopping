@@ -21,7 +21,7 @@ import {
 
 export default function ProductBreadcrumb({ product }: { product: Product }) {
   return (
-    <Breadcrumb className='mb-6'>
+    <Breadcrumb className='mb-6 overflow-x-auto'>
       <BreadcrumbList className='flex-nowrap'>
         {/* HOME - Always Visible */}
         <BreadcrumbItem>
@@ -93,8 +93,8 @@ export default function ProductBreadcrumb({ product }: { product: Product }) {
         {/* Desktop Only Separator & SubCategory */}
         {product.subSubCategory && (
           <>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
+            <BreadcrumbSeparator className='hidden xl:block' />
+            <BreadcrumbItem className='hidden xl:block'>
               <BreadcrumbLink asChild>
                 <Link
                   href={`/product?category=${product.category.name}&subSubCategory=${product.subSubCategory.name}`}

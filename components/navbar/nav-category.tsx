@@ -35,7 +35,7 @@ function CategoryMenu({ cat }: { cat: Category }) {
                     className='font-semibold text-[8px] lg:text-[10px] 2xl:text-[16px] xl:text-sm hover:cursor-pointer'
                   >
                     <Link
-                      href={`/product?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sc.name)}`}
+                      href={`/product?category=${encodeURIComponent(cat.slug)}&subCategory=${encodeURIComponent(sc.slug)}`}
                     >
                       {sc.name}
                     </Link>
@@ -51,7 +51,7 @@ function CategoryMenu({ cat }: { cat: Category }) {
                           className='font-semibold text-[8px] lg:text-[10px] xl:text-sm hover:cursor-pointer'
                         >
                           <Link
-                            href={`/product?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sc.name)}&subSubCategory=${encodeURIComponent(ssc.name)}`}
+                            href={`/product?category=${encodeURIComponent(cat.slug)}&subCategory=${encodeURIComponent(sc.slug)}&subSubCategory=${encodeURIComponent(ssc.slug)}`}
                           >
                             {ssc.name}
                           </Link>

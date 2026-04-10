@@ -54,7 +54,7 @@ export default function MobileNav({ categories }: { categories: Category[] }) {
                         subSubCat.length === 0 && (
                           <Link
                             className='text-lg'
-                            href={`/product?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sc.name)}`}
+                            href={`/product?category=${encodeURIComponent(cat.slug)}&subCategory=${encodeURIComponent(sc.slug)}`}
                             key={sc.slug}
                           >
                             {sc.name}
@@ -86,7 +86,7 @@ export default function MobileNav({ categories }: { categories: Category[] }) {
                               {subSubCat.map((ssc) => (
                                 <Link
                                   className='text-[16px]'
-                                  href={`/product?category=${encodeURIComponent(cat.name)}&subCategory=${encodeURIComponent(sc.name)}&subSubCategory=${encodeURIComponent(ssc.name)}`}
+                                  href={`/product?category=${encodeURIComponent(cat.slug)}&subCategory=${encodeURIComponent(sc.slug)}&subSubCategory=${encodeURIComponent(ssc.slug)}`}
                                   key={ssc.slug}
                                 >
                                   {ssc.name}

@@ -18,14 +18,6 @@ import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "../ui/breadcrumb";
 import ProductBreadcrumb from "./breadcrumb-product";
 
 export default function ProductDetails({ product }: { product: Product }) {
@@ -75,14 +67,14 @@ export default function ProductDetails({ product }: { product: Product }) {
               <div className='space-y-6 md:col-span-8'>
                 <div className='space-y-4'>
                   <Badge
-                    variant='secondary'
+                    variant='outline'
                     className='px-3 py-1 rounded-full font-semibold text-xs'
                   >
                     {product?.brand?.name || "Premium Selection"}
                   </Badge>
 
                   <Heading4
-                    className='font-bold text-2xl md:text-3xl tracking-tight'
+                    className='font-bold text-xl md:text-2xl lg:text-3xl tracking-tight'
                     text={product?.name || ""}
                   />
 
@@ -95,7 +87,7 @@ export default function ProductDetails({ product }: { product: Product }) {
                   </div>
 
                   <div className='flex items-baseline gap-3'>
-                    <span className='font-extrabold text-primary text-3xl'>
+                    <span className='font-extrabold text-primary text-2xl'>
                       TK {finalPrice.toLocaleString()}
                     </span>
                     {Number(product?.discountPrice) > 0 && (

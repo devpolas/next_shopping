@@ -204,6 +204,7 @@ model SubSubCategory {
 }
 model Brand {
   id        String   @id @default(uuid())
+  slug      String
   name      String   @unique
   isActive  Boolean  @default(true)
 

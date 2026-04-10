@@ -12,6 +12,7 @@ import {
 } from "@/types/product";
 import prisma from "../prisma";
 import { CategoryType } from "@/app/generated/prisma/enums";
+import { Prisma } from "@/app/generated/prisma/client";
 
 interface ResponseInterface {
   success: boolean;
@@ -22,13 +23,14 @@ interface ResponseInterface {
 
 export async function createBrand(name: string): Promise<ResponseInterface> {
   const brandName = name.trim();
+  const slug = slugify(brandName);
   try {
     const exists = await prisma.brand.findUnique({
       where: { name: brandName },
     });
     if (exists) return { success: false, message: "Brand already exists" };
 
-    await prisma.brand.create({ data: { name: brandName } });
+    await prisma.brand.create({ data: { name: brandName, slug } });
     return { success: true, message: "Brand created successfully" };
   } catch (error) {
     console.error("Brand create error:", error);
@@ -337,23 +339,84 @@ export async function createProduct(
   }
 }
 
-export async function getProducts(): Promise<{
-  success: boolean;
-  products?: Product[];
-  message?: string;
-}> {
+export async function getProducts(
+  take = 10,
+  skip = 0,
+  search?: string,
+  category_slug?: string,
+  subCategory_slug?: string,
+  subSubCategory_slug?: string,
+  brand_slug?: string,
+  minPrice?: number,
+  maxPrice?: number,
+) {
   try {
-    const response = await prisma.product.findMany({
-      include: {
-        images: true,
-        variants: true,
-        brand: true,
-        category: true,
-        subCategory: true,
-        subSubCategory: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const where: Prisma.ProductWhereInput = {};
+    const andConditions: Prisma.ProductWhereInput[] = [];
+
+    // 🔍 SEARCH
+    if (search) {
+      andConditions.push({
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { slug: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+        ],
+      });
+    }
+
+    // 🏷 CATEGORY
+    if (category_slug) {
+      andConditions.push({
+        category: {
+          slug: { equals: category_slug },
+        },
+      });
+    }
+
+    // 🏷 BRAND
+    if (brand_slug) {
+      andConditions.push({
+        brand: {
+          slug: { equals: brand_slug },
+        },
+      });
+    }
+
+    // 💰 PRICE
+    if (minPrice || maxPrice) {
+      andConditions.push({
+        price: {
+          gte: minPrice ?? 0,
+          lte: maxPrice ?? undefined,
+        },
+      });
+    }
+
+    // ✅ attach conditions
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
+    }
+
+    const [totalCount, response] = await prisma.$transaction([
+      prisma.product.count({ where }),
+      prisma.product.findMany({
+        where,
+        include: {
+          images: true,
+          variants: true,
+          brand: true,
+          category: true,
+          subCategory: true,
+          subSubCategory: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take,
+        skip,
+      }),
+    ]);
+
+    const totalPage = Math.ceil(totalCount / take);
 
     const products: Product[] = response.map((p) => ({
       ...p,
@@ -361,13 +424,12 @@ export async function getProducts(): Promise<{
       discountPrice: p.discountPrice?.toNumber() ?? null,
     }));
 
-    return { success: true, products };
+    return { success: true, products, totalPage };
   } catch (error) {
     console.error("Product fetch error:", error);
     return { success: false, message: "Failed to fetch products" };
   }
 }
-
 export async function updateProduct(
   id: string,
   data: ProductInput,
