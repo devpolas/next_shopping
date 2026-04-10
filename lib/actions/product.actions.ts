@@ -351,53 +351,36 @@ export async function getProducts(
   maxPrice?: number,
 ) {
   try {
-    const where: Prisma.ProductWhereInput = {};
-    const andConditions: Prisma.ProductWhereInput[] = [];
-
-    // 🔍 SEARCH
-    if (search) {
-      andConditions.push({
+    // 1. Define the base filters
+    // We can use an object-based approach which Prisma naturally treats as AND
+    const where: Prisma.ProductWhereInput = {
+      // Search logic (Global search)
+      ...(search && {
         OR: [
           { name: { contains: search, mode: "insensitive" } },
           { slug: { contains: search, mode: "insensitive" } },
           { description: { contains: search, mode: "insensitive" } },
         ],
-      });
-    }
+      }),
 
-    // 🏷 CATEGORY
-    if (category_slug) {
-      andConditions.push({
-        category: {
-          slug: { equals: category_slug },
-        },
-      });
-    }
+      // Exact Slug Matches for Relations
+      ...(category_slug && { category: { slug: category_slug } }),
+      ...(subCategory_slug && { subCategory: { slug: subCategory_slug } }),
+      ...(subSubCategory_slug && {
+        subSubCategory: { slug: subSubCategory_slug },
+      }),
+      ...(brand_slug && { brand: { slug: brand_slug } }),
 
-    // 🏷 BRAND
-    if (brand_slug) {
-      andConditions.push({
-        brand: {
-          slug: { equals: brand_slug },
-        },
-      });
-    }
-
-    // 💰 PRICE
-    if (minPrice || maxPrice) {
-      andConditions.push({
+      // Price Range
+      ...((minPrice !== undefined || maxPrice !== undefined) && {
         price: {
           gte: minPrice ?? 0,
           lte: maxPrice ?? undefined,
         },
-      });
-    }
+      }),
+    };
 
-    // ✅ attach conditions
-    if (andConditions.length > 0) {
-      where.AND = andConditions;
-    }
-
+    // 2. Transaction for performance and data consistency
     const [totalCount, response] = await prisma.$transaction([
       prisma.product.count({ where }),
       prisma.product.findMany({
@@ -418,18 +401,25 @@ export async function getProducts(
 
     const totalPage = Math.ceil(totalCount / take);
 
-    const products: Product[] = response.map((p) => ({
+    // 3. Map Decimal types to numbers for the frontend
+    const products = response.map((p) => ({
       ...p,
       price: p.price.toNumber(),
       discountPrice: p.discountPrice?.toNumber() ?? null,
     }));
 
-    return { success: true, products, totalPage };
+    return {
+      success: true,
+      products,
+      totalPage,
+      totalCount, // Often helpful for "Showing X of Y results" UI
+    };
   } catch (error) {
     console.error("Product fetch error:", error);
     return { success: false, message: "Failed to fetch products" };
   }
 }
+
 export async function updateProduct(
   id: string,
   data: ProductInput,
