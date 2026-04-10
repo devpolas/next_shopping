@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,7 +38,7 @@ import {
   productSchema,
 } from "./product-create-schema";
 import { productOptions } from "./product-static-data";
-import { useProductCategories } from "./product-hooks/product-categories";
+import { useProductCategoryTree } from "./product-hooks/product-categories";
 import { useProductDialog } from "./product-hooks/product-dialog";
 import { useProductImages } from "./product-hooks/product-upload-imgs";
 
@@ -54,8 +54,8 @@ export default function CreateProduct({
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const allCategories = categories.map((c) => ({ label: c.name, value: c.id }));
   const allBrands = brands.map((b) => ({ label: b.name, value: b.id }));
+  const allCategories = categories.map((c) => ({ label: c.name, value: c.id }));
 
   // ---------------- Form Setup ----------------
   const {
@@ -87,10 +87,12 @@ export default function CreateProduct({
   const watchSubCategory = watch("subCategoryId");
 
   //category-hook
-  const { allSubCategories, allSubSubCategories } = useProductCategories(
-    watchCategory,
-    setValue,
-  );
+  const { subCategories, allSubCategories, allSubSubCategories } =
+    useProductCategoryTree({
+      categoryId: watchCategory,
+      subCategoryId: watchSubCategory,
+      setValue,
+    });
 
   // dialog hook
   const {
@@ -116,9 +118,6 @@ export default function CreateProduct({
     uploadCoverImage,
     uploadProductImages,
   } = useProductImages(images, imagesFieldArray);
-
-  // ---------------- Effects ----------------
-  useEffect(() => setMounted(true), []);
 
   const onSubmit = async (data: ProductInput) => {
     setLoading(true);
@@ -166,6 +165,9 @@ export default function CreateProduct({
       setLoading(false);
     }
   };
+
+  // ---------------- Effects ----------------
+  useEffect(() => setMounted(true), []);
 
   if (!mounted) return <Loading />;
 

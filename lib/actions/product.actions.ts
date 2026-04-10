@@ -382,23 +382,22 @@ export async function getProducts(
     };
 
     // 2. Transaction for performance and data consistency
-    const [totalCount, response] = await prisma.$transaction([
-      prisma.product.count({ where }),
-      prisma.product.findMany({
-        where,
-        include: {
-          images: true,
-          variants: true,
-          brand: true,
-          category: true,
-          subCategory: true,
-          subSubCategory: true,
-        },
-        orderBy: { createdAt: "desc" },
-        take,
-        skip,
-      }),
-    ]);
+    const response = await prisma.product.findMany({
+      where,
+      include: {
+        images: true,
+        variants: true,
+        brand: true,
+        category: true,
+        subCategory: true,
+        subSubCategory: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take,
+      skip,
+    });
+
+    const totalCount = await prisma.product.count({ where });
 
     const totalPage = Math.ceil(totalCount / take);
 
