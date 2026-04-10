@@ -1,4 +1,5 @@
 "use client";
+
 import { CldImage } from "next-cloudinary";
 import { ProductImage } from "@/types/product";
 import { useState, useMemo } from "react";
@@ -8,6 +9,9 @@ import { Button } from "../ui/button";
 export default function ShowProductImage({ img }: { img: ProductImage[] }) {
   const defaultImg = useMemo(() => img?.[0]?.url || "", [img]);
   const [currentImgUrl, setCurrentImgUrl] = useState(defaultImg);
+
+  const [zoomStyle, setZoomStyle] = useState({});
+  const [isZooming, setIsZooming] = useState(false);
 
   if (!img || img.length === 0) {
     return (
@@ -19,23 +23,57 @@ export default function ShowProductImage({ img }: { img: ProductImage[] }) {
     );
   }
 
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const { left, top, width, height } =
+      e.currentTarget.getBoundingClientRect();
+
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+
+    setZoomStyle({
+      transformOrigin: `${x}% ${y}%`,
+      transform: "scale(2.2)",
+    });
+  }
+
+  function handleMouseLeave() {
+    setIsZooming(false);
+    setZoomStyle({
+      transform: "scale(1)",
+      transformOrigin: "center",
+    });
+  }
+
   return (
     <div className='flex xl:flex-row-reverse flex-col items-center xl:items-stretch gap-4'>
-      <div className='relative flex-1 bg-white shadow-md border rounded-2xl w-full aspect-4/5 sm:aspect-square overflow-hidden'>
+      {/* MAIN IMAGE (ZOOM ENABLED) */}
+      <div
+        className='relative flex-1 bg-white shadow-md border rounded-2xl w-full aspect-square overflow-hidden'
+        onMouseMove={(e) => {
+          handleMouseMove(e);
+          setIsZooming(true);
+        }}
+        onMouseLeave={handleMouseLeave}
+      >
         <CldImage
           key={currentImgUrl}
           fill
           src={currentImgUrl}
           alt='Featured product'
-          className='p-4 object-contain transition-all animate-in duration-500 fade-in zoom-in-95'
+          className={cn(
+            "p-4 object-contain transition-transform duration-200 ease-out",
+            isZooming && "cursor-zoom-in",
+          )}
+          style={zoomStyle}
           sizes='(max-width: 768px) 100vw, 50vw'
         />
       </div>
 
-      {/* Thumbnails - Optimized for Mobile Scroll */}
-      <div className='flex flex-row xl:flex-col gap-3 pb-2 md:pb-0 lg:overflow-visible overflow-x-auto scrollbar-hide'>
+      {/* THUMBNAILS */}
+      <div className='flex flex-row xl:flex-col gap-3 pb-2 md:pb-0 overflow-x-auto scrollbar-hide'>
         {img.map((item) => {
           const isActive = currentImgUrl === item.url;
+
           return (
             <Button
               key={item.url}

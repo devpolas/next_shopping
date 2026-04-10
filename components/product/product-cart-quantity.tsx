@@ -71,7 +71,7 @@ export default function CartInput({
         onBlur={handleBlur}
         className={cn(
           "bg-transparent border-none focus-visible:ring-0 h-8 font-bold text-base text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]",
-          "w-12",
+          "w-18",
         )}
       />
 

@@ -14,7 +14,7 @@ import {
 } from "../ui/card";
 import CartInput from "./product-cart-quantity";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
@@ -22,11 +22,29 @@ import { cn } from "@/lib/utils";
 export default function ProductDetails({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+  const [maxStock, setMaxStock] = useState<number>(0);
 
   const finalPrice = Number(product?.price) - Number(product?.discountPrice);
   const total = finalPrice * quantity;
   const delivery = 150;
   const grandTotal = total + delivery;
+
+  useEffect(() => {
+    if (!selectedVariant) {
+      return;
+    }
+    const maxStock =
+      product?.variants.find((v) => v.id === selectedVariant)?.stock ?? 0;
+    // eslint-disable-next-line
+    setMaxStock(maxStock);
+  }, [selectedVariant]);
+
+  function handleCart() {
+    console.log(product.id, grandTotal, quantity);
+  }
+  function handleOrder() {
+    console.log(product.id, grandTotal, quantity);
+  }
 
   return (
     <div className='mx-auto px-4 py-4 md:py-10'>
@@ -76,9 +94,16 @@ export default function ProductDetails({ product }: { product: Product }) {
                     Select Variation
                   </Label>
                   {selectedVariant && (
-                    <span className='slide-in-from-right-2 flex items-center gap-1 text-green-600 text-xs animate-in fade-in'>
-                      <CheckCircle2 className='w-3 h-3' /> Selected
-                    </span>
+                    <div>
+                      <span className='slide-in-from-right-2 flex items-center gap-1 text-green-600 text-xs animate-in fade-in'>
+                        <CheckCircle2 className='w-3 h-3' /> Selected
+                      </span>
+                      <p className='text-muted-foreground text-xs animate-in fade-in'>
+                        {maxStock > 0
+                          ? `Stock available: ${maxStock}`
+                          : "Out of stock"}
+                      </p>
+                    </div>
                   )}
                 </div>
 
@@ -158,7 +183,11 @@ export default function ProductDetails({ product }: { product: Product }) {
                     <Label className='font-bold text-muted-foreground text-xs uppercase tracking-wider'>
                       Adjust Quantity
                     </Label>
-                    <CartInput quantity={quantity} setQuantity={setQuantity} />
+                    <CartInput
+                      quantity={quantity}
+                      setQuantity={setQuantity}
+                      maxStock={maxStock}
+                    />
                   </div>
                 </CardContent>
 
@@ -167,6 +196,7 @@ export default function ProductDetails({ product }: { product: Product }) {
                     disabled={!selectedVariant}
                     variant='outline'
                     className='group w-full h-12 font-semibold text-base'
+                    onClick={handleCart}
                   >
                     <ShoppingCart className='mr-2 w-5 h-5 transition-transform group-hover:-translate-y-1' />
                     Add to Cart
@@ -178,6 +208,7 @@ export default function ProductDetails({ product }: { product: Product }) {
                       "shadow-lg shadow-primary/20 w-full h-12 font-bold text-base",
                       selectedVariant && "animate-pulse-subtle",
                     )}
+                    onClick={handleOrder}
                   >
                     <ShoppingBag className='mr-2 w-5 h-5' />
                     Buy Now
