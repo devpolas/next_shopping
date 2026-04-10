@@ -1,7 +1,7 @@
 "use client";
 import { Product } from "@/types/product";
 import { ProductCard } from "./product-card";
-import { useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -12,19 +12,20 @@ import {
   PaginationPrevious,
 } from "../ui/pagination";
 import { useSearchParams } from "next/navigation";
+import { getProducts } from "@/lib/actions/product.actions";
 
-export default function ProductCards({ products }: { products: Product[] }) {
+export default function ProductCards() {
   const searchParams = useSearchParams();
+  const [products, setProducts] = useState<Product[] | []>([]);
   const [page, setPage] = useState(1);
-  const totalPages = 10;
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 10;
 
-  const category = searchParams.get("category");
-  const subCategory = searchParams.get("subCategory");
-  const subSubCategory = searchParams.get("subSubCategory");
-  const currentPage = searchParams.get("subSubCategory");
-  const search = searchParams.get("search");
-
-  console.log(category, subCategory, subSubCategory);
+  // Extract params for the dependency array
+  const category = searchParams.get("category") ?? undefined;
+  const subCategory = searchParams.get("subCategory") ?? undefined;
+  const subSubCategory = searchParams.get("subSubCategory") ?? undefined;
+  const search = searchParams.get("search") ?? undefined;
 
   // pagination logic
   function getPageNumbers(current: number, total: number, maxVisible = 5) {
@@ -49,6 +50,38 @@ export default function ProductCards({ products }: { products: Product[] }) {
 
     return pages;
   }
+
+  useEffect(() => {
+    async function fetchProducts() {
+      // Calculate skip for Prisma
+      const skip = (page - 1) * PAGE_SIZE;
+
+      startTransition(async () => {
+        const response = await getProducts(
+          PAGE_SIZE,
+          skip,
+          search,
+          category,
+          subCategory,
+          subSubCategory,
+        );
+
+        if (response.success && response.products) {
+          setProducts(response.products as Product[]);
+          setTotalPages(response.totalPage ?? 1);
+        }
+      });
+    }
+
+    fetchProducts();
+    // Re-fetch when page or filters change
+  }, [page, search, category, subCategory, subSubCategory]);
+
+  // Reset to page 1 if filters change
+  useEffect(() => {
+    //eslint-disable-next-line
+    setPage(1);
+  }, [search, category, subCategory, subSubCategory]);
 
   return (
     <div className='flex flex-col'>

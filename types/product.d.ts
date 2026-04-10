@@ -72,6 +72,7 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
+  coverImage: string;
   price: number;
   discountPrice: number | null;
   gender: Gender;

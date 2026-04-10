@@ -114,6 +114,7 @@ export const productSchema = z
     subCategoryId: z.string({ error: "Subcategory is required" }),
     subSubCategoryId: z.string().optional(),
     brandId: z.string().optional(),
+    coverImage: z.string().min(1),
     images: z
       .array(
         z.object({

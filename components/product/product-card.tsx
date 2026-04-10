@@ -21,7 +21,7 @@ export function ProductCard({ product }: { product: Product }) {
       {/* Image Container */}
       <div className='relative bg-white w-full h-52 aspect-square'>
         <CldImage
-          src={product.images[0].url}
+          src={product.coverImage}
           alt={product.name}
           fill
           preserveTransformations

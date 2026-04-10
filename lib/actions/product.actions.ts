@@ -326,6 +326,7 @@ export async function createProduct(
         subCategoryId: productData.subCategoryId,
         subSubCategoryId: productData.subSubCategoryId,
         brandId: productData.brandId,
+        coverImage: productData.coverImage,
         images: { create: productData.images.map((img) => ({ url: img.url })) },
         variants: { create: productData.variants },
         updatedAt: new Date(),

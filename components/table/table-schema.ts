@@ -10,6 +10,7 @@ export const productSchema = z.object({
   subCategoryId: z.string(),
   brandId: z.string().nullable().optional(),
   images: z.array(z.object({ id: z.string(), url: z.string() })),
+  coverImage: z.string(),
   isFeatured: z.boolean(),
   isNew: z.boolean(),
   isActive: z.boolean(),
