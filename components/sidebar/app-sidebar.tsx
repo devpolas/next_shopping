@@ -30,9 +30,9 @@ import { NavMain } from "./nav-main";
 import { NavDocuments } from "./nav-teams";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
-import Logo from "../logo/logo";
 import { authClient } from "@/lib/auth-client";
 import LoadingSpinner from "../spinner/loading-spinner";
+import MobileLogo from "../logo/logo-mobile";
 
 const data = {
   navMain: [
@@ -115,7 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 asChild
                 className='data-[slot=sidebar-menu-button]:p-1.5!'
               >
-                <Logo />
+                <MobileLogo />
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
