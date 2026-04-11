@@ -1,36 +1,205 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛍️ Next Shopping
 
-## Getting Started
+A modern full-stack eCommerce application built with Next.js 16, React 19, Prisma, and Tailwind CSS.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+- 🧑‍💻 Modern App Router (Next.js 16)
+- 🎨 Beautiful UI with Tailwind CSS & shadcn
+- 🧩 Component-based architecture
+- 🔐 Authentication (better-auth)
+- 🗃️ PostgreSQL database with Prisma ORM
+- 🖼️ Image upload & optimization (Cloudinary)
+- 📦 Product management system
+- 🔎 Advanced filtering & search
+- 🧮 Forms with validation (React Hook Form + Zod)
+- 📊 Data tables (TanStack Table)
+- 🎞️ Animations (Framer Motion)
+- 🔔 Notifications (Sonner)
+
+---
+
+## 🧱 Tech Stack
+
+### Frontend
+
+- Next.js 16
+- React 19
+- Tailwind CSS 4
+- shadcn/ui
+- Radix UI
+- Framer Motion
+- React Icons
+
+### Backend
+
+- Prisma ORM
+- PostgreSQL (pg)
+- Better Auth
+- Nodemailer
+
+### State & Forms
+
+- React Hook Form
+- Zod
+
+### Utilities
+
+- clsx / tailwind-merge
+- slugify
+- dotenv
+
+### Advanced UI & Interaction
+
+- @dnd-kit (drag & drop)
+- TanStack React Table
+- Recharts (charts)
+- Vaul (drawers)
+
+---
+
+## 📦 Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/your-username/next_shopping.git
+
+cd next_shopping
+
+# Install dependencies
+npm install
+```
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root:
+
+```env
+DATABASE_URL=your_database_url
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+AUTH_SECRET=your_auth_secret
+EMAIL_USER=your_email
+EMAIL_PASS=your_email_password
+```
+
+---
+
+## 🧪 Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App will run at:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🏗️ Build
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+npm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧹 Lint
 
-## Deploy on Vercel
+```bash
+npm run lint
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🗄️ Database (Prisma)
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+```
+
+---
+
+## 📁 Project Structure (Example)
+
+```
+/app
+/components
+/hooks
+/lib
+/prisma
+/public
+/styles
+/types
+```
+
+---
+
+## ✨ Key Libraries Explained
+
+- **Prisma** → Database ORM
+- **Better Auth** → Authentication system
+- **React Hook Form + Zod** → Form handling & validation
+- **shadcn/ui + Radix** → Accessible UI components
+- **@dnd-kit** → Drag and drop functionality
+- **TanStack Table** → Advanced tables
+- **Framer Motion** → Animations
+- **Cloudinary** → Image storage
+
+---
+
+## 📌 Scripts
+
+| Script | Description              |
+| ------ | ------------------------ |
+| dev    | Start development server |
+| build  | Build app for production |
+| start  | Run production server    |
+| lint   | Run ESLint               |
+
+---
+
+## 📬 Email Support
+
+Uses Nodemailer for sending emails (e.g., order confirmations, password reset).
+
+---
+
+## 🧑‍💻 Author
+
+**Your Name**
+
+---
+
+## 📄 License
+
+This project is private and not licensed for public distribution.
+
+---
+
+## 💡 Future Improvements
+
+- Payment integration (Stripe)
+- Order tracking system
+- Admin dashboard enhancements
+- Performance optimization
+- SEO improvements
+
+---
+
+## ⭐ Support
+
+If you like this project, consider giving it a ⭐ on GitHub!
