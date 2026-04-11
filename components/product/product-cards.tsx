@@ -1,7 +1,8 @@
 "use client";
+
 import { Product } from "@/types/product";
 import { ProductCard } from "./product-card";
-import { startTransition, Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -16,19 +17,21 @@ import { getProducts } from "@/lib/actions/product.actions";
 import Loading from "@/app/loading";
 
 export default function ProductCards() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState("");
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<Product[] | []>([]);
+
+  const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
   const PAGE_SIZE = 10;
 
-  // Extract params for the dependency array
   const category = searchParams.get("category") ?? undefined;
   const subCategory = searchParams.get("subCategory") ?? undefined;
   const subSubCategory = searchParams.get("subSubCategory") ?? undefined;
   const search = searchParams.get("search") ?? undefined;
 
-  // pagination logic
   function getPageNumbers(current: number, total: number, maxVisible = 5) {
     const pages: (number | string)[] = [];
 
@@ -53,89 +56,111 @@ export default function ProductCards() {
   }
 
   useEffect(() => {
-    async function fetchProducts() {
-      // Calculate skip for Prisma
-      const skip = (page - 1) * PAGE_SIZE;
+    let isMounted = true; // prevent race condition
 
-      startTransition(async () => {
+    async function fetchProducts() {
+      setIsLoading(true);
+      setIsError("");
+
+      try {
+        const skip = (page - 1) * PAGE_SIZE;
+
         const response = await getProducts(
           PAGE_SIZE,
           skip,
-          search?.toLocaleLowerCase(),
-          category?.toLocaleLowerCase(),
-          subCategory?.toLocaleLowerCase(),
-          subSubCategory?.toLocaleLowerCase(),
+          search?.toLowerCase(),
+          category?.toLowerCase(),
+          subCategory?.toLowerCase(),
+          subSubCategory?.toLowerCase(),
         );
 
+        if (!isMounted) return;
+
         if (response.success && response.products) {
-          setProducts(response.products as Product[]);
+          setProducts(response.products);
           setTotalPages(response.totalPage ?? 1);
+        } else {
+          setProducts([]);
         }
-      });
+      } catch (error) {
+        if (isMounted) {
+          setIsError("Something went wrong");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
     }
 
     fetchProducts();
-    // Re-fetch when page or filters change
+
+    return () => {
+      isMounted = false;
+    };
   }, [page, search, category, subCategory, subSubCategory]);
 
-  // Reset to page 1 if filters change
   useEffect(() => {
-    //eslint-disable-next-line
     setPage(1);
   }, [search, category, subCategory, subSubCategory]);
 
+  if (isLoading) return <Loading />;
+
+  if (isError) {
+    return <div className='text-red-500'>{isError}</div>;
+  }
+
   return (
-    <Suspense fallback={<Loading />}>
-      <div className='flex flex-col'>
+    <div className='flex flex-col'>
+      {products.length === 0 ? (
+        <p className='py-10 text-muted-foreground text-sm md:text-lg xl:text-xl text-center'>
+          No products found for your filters
+        </p>
+      ) : (
         <div className='gap-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-        {totalPages > 1 && (
-          <div className='py-16'>
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    className='hover:cursor-pointer'
-                    onClick={() => setPage(page > 1 ? page - 1 : 1)}
-                  />
-                </PaginationItem>
+      )}
 
-                {getPageNumbers(page, Number(totalPages)).map((p, idx) => (
-                  <PaginationItem key={idx}>
-                    {typeof p === "number" ? (
-                      <PaginationLink
-                        className='hover:cursor-pointer'
-                        isActive={p === page}
-                        onClick={() => setPage(p)}
-                      >
-                        {p ? p : "..."}
-                      </PaginationLink>
-                    ) : (
-                      <PaginationEllipsis />
-                    )}
-                  </PaginationItem>
-                ))}
+      {products.length > 0 && totalPages > 1 && (
+        <div className='py-16'>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  className='cursor-pointer'
+                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                />
+              </PaginationItem>
 
-                <PaginationItem>
-                  <PaginationNext
-                    className='hover:cursor-pointer'
-                    onClick={() =>
-                      setPage(
-                        page < Number(totalPages)
-                          ? page + 1
-                          : Number(totalPages),
-                      )
-                    }
-                  />
+              {getPageNumbers(page, totalPages).map((p, idx) => (
+                <PaginationItem key={idx}>
+                  {typeof p === "number" ? (
+                    <PaginationLink
+                      className='cursor-pointer'
+                      isActive={p === page}
+                      onClick={() => setPage(p)}
+                    >
+                      {p}
+                    </PaginationLink>
+                  ) : (
+                    <PaginationEllipsis />
+                  )}
                 </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
-      </div>
-    </Suspense>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  className='cursor-pointer'
+                  onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
+    </div>
   );
 }

@@ -13,6 +13,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useTransition } from "react"; // Added useTransition
 import { toast } from "sonner";
 import LoadingSpinner from "@/components/spinner/loading-spinner";
+import MobileLogo from "@/components/logo/logo-mobile";
+import { Heading4 } from "@/components/typography/typography";
 
 function VerifyEmailContent() {
   const router = useRouter();
@@ -57,7 +59,11 @@ function VerifyEmailContent() {
 
   return (
     <Card className='mx-auto mt-10 w-full max-w-sm'>
-      <CardHeader>
+      <CardHeader className='space-y-2'>
+        <div className='flex flex-col justify-center items-center gap-4'>
+          <MobileLogo />
+          <Heading4 text='Welcome Back to NextShop' />
+        </div>
         <CardTitle>Verify Your Account</CardTitle>
         <CardDescription>
           We&apos;ve sent a verification email to <strong>{email}</strong>.

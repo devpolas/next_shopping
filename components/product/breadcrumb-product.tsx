@@ -30,6 +30,13 @@ export default function ProductBreadcrumb({ product }: { product: Product }) {
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
+        {/* PRODUCT - Always Visible */}
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link href='/product'>Product</Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
 
         {/* MOBILE ELLIPSIS / DESKTOP FULL CATEGORIES */}
         {/* This section toggles based on screen size */}

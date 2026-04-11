@@ -14,6 +14,7 @@ import { Heading4 } from "@/components/typography/typography";
 import SigninForm from "./signin-form";
 import { Metadata } from "next";
 import { FieldSeparator } from "@/components/ui/field";
+import MobileLogo from "@/components/logo/logo-mobile";
 
 export const metadata: Metadata = {
   title: "Signin",
@@ -23,7 +24,10 @@ export const metadata: Metadata = {
 export default async function SigninPage() {
   return (
     <Card className='w-full max-w-sm'>
-      <Heading4 className={"text-center"} text='Welcome Back' />
+      <div className='flex flex-col justify-center items-center gap-4'>
+        <MobileLogo />
+        <Heading4 text='Welcome Back to NextShop' />
+      </div>
       <CardHeader>
         <CardTitle>Signin to your account</CardTitle>
         <CardDescription>

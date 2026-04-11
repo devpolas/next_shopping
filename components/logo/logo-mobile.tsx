@@ -1,3 +1,4 @@
+import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 export default function MobileLogo() {
@@ -5,11 +6,14 @@ export default function MobileLogo() {
     <Link
       aria-label='Go to homepage'
       href='/'
-      className='flex items-center gap-2 font-bold text-green-600 text-xl'
+      className='flex items-center gap-2 font-bold text-green-600'
     >
-      <strong>
-        <em>NEXTSHOP</em>
-      </strong>
+      <ShoppingBag size={24} />
+      <span className='md:text-lg text-xl xl:text-xl'>
+        <strong>
+          <em>NEXTSHOP</em>
+        </strong>
+      </span>
     </Link>
   );
 }
