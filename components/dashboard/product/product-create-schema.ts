@@ -38,7 +38,7 @@ export type ProductInput = z.infer<typeof productSchema>;
 export const productDefaultValues: ProductInput = {
   name: "",
   description: "",
-  price: 0,
+  price: 1,
   coverImage: undefined,
   discountPrice: undefined,
   gender: "men",
