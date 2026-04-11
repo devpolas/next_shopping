@@ -92,16 +92,8 @@ export type ProductVariantInput = z.input<typeof productVariantSchema>;
 //////////////////////
 export const productSchema = z
   .object({
-    name: z
-      .string()
-      .trim()
-      .min(3, { message: "Product name must be at least 3 characters" })
-      .max(100, { message: "Product name cannot exceed 100 characters" }),
-    description: z
-      .string()
-      .trim()
-      .min(10, { message: "Description must be at least 10 characters" })
-      .max(1000, { message: "Description cannot exceed 1000 characters" }),
+    name: z.string().min(3).max(200),
+    description: z.string().min(10).max(2000),
     price: z
       .number({ error: "Price must be a number" })
       .positive({ message: "Price must be positive" }),

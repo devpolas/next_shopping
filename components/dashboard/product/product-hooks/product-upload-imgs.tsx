@@ -48,7 +48,7 @@ export function useProductImages(
       return;
     }
 
-    setValue("coverImage", undefined as unknown as File, {
+    setValue("coverImage", file, {
       shouldValidate: true,
     });
 

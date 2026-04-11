@@ -377,6 +377,9 @@ export default function CreateProduct({
                       Product Images
                     </FieldLabel>
                     <Input
+                      {...register("coverImage", {
+                        required: "Please add cover image",
+                      })}
                       id='product-images'
                       type='file'
                       multiple
