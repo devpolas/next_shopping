@@ -10,11 +10,7 @@ export const productSchema = z.object({
   subCategoryId: z.string().min(1),
   subSubCategoryId: z.string().optional(),
   brandId: z.string().optional(),
-  coverImage: z
-    .instanceof(File)
-    .refine((file) => file.size > 0, "Cover image required")
-    .nullable(),
-
+  coverImage: z.instanceof(File).optional(),
   images: z
     .array(
       z.object({
@@ -43,7 +39,7 @@ export const productDefaultValues: ProductInput = {
   name: "",
   description: "",
   price: 0,
-  coverImage: null,
+  coverImage: undefined,
   discountPrice: undefined,
   gender: "men",
   categoryId: "",

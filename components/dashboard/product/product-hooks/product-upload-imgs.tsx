@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ProductInput } from "../product-create-schema";
-import { UseFieldArrayReturn } from "react-hook-form";
+import { UseFieldArrayReturn, UseFormSetValue } from "react-hook-form";
 
 const IMAGE_SIZE = 5 * 1024 * 1024;
 
 export function useProductImages(
   images: ProductInput["images"],
   imagesFieldArray: UseFieldArrayReturn<ProductInput, "images", "id">,
+  setValue: UseFormSetValue<ProductInput>,
 ) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -46,6 +47,10 @@ export function useProductImages(
       toast.warning("Image size less than 5 MB");
       return;
     }
+
+    setValue("coverImage", undefined as unknown as File, {
+      shouldValidate: true,
+    });
 
     setSelectedImage(URL.createObjectURL(file));
   }
@@ -92,6 +97,7 @@ export function useProductImages(
 
   function removeCoverImage() {
     setSelectedImage(null);
+    setValue("coverImage", undefined, { shouldValidate: true });
   }
 
   useEffect(() => {

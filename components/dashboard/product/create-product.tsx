@@ -117,9 +117,10 @@ export default function CreateProduct({
     removeCoverImage,
     uploadCoverImage,
     uploadProductImages,
-  } = useProductImages(images, imagesFieldArray);
+  } = useProductImages(images, imagesFieldArray, setValue);
 
   const onSubmit = async (data: ProductInput) => {
+    console.log(data);
     setLoading(true);
     try {
       const exists = await isProductExists(data.name);
