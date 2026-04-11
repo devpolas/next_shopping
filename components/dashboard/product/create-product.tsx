@@ -120,7 +120,6 @@ export default function CreateProduct({
   } = useProductImages(images, imagesFieldArray, setValue);
 
   const onSubmit = async (data: ProductInput) => {
-    console.log(data);
     setLoading(true);
     try {
       const exists = await isProductExists(data.name);

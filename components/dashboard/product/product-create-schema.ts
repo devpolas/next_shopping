@@ -3,7 +3,7 @@ import * as z from "zod";
 export const productSchema = z.object({
   name: z.string().min(3).max(200),
   description: z.string().min(10).max(2000),
-  price: z.number().min(1),
+  price: z.number().positive(),
   discountPrice: z.number().optional(),
   gender: z.enum(["men", "women", "unisex"]),
   categoryId: z.string().min(1),
@@ -38,7 +38,7 @@ export type ProductInput = z.infer<typeof productSchema>;
 export const productDefaultValues: ProductInput = {
   name: "",
   description: "",
-  price: 1,
+  price: 0,
   coverImage: undefined,
   discountPrice: undefined,
   gender: "men",

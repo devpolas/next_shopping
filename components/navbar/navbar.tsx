@@ -5,8 +5,6 @@ import NavHeader from "./nav-header";
 export async function Navbar() {
   const categoryResult = await getCategories();
 
-  console.log(categoryResult);
-
   const categories = categoryResult.success
     ? categoryResult.categories || []
     : [];
