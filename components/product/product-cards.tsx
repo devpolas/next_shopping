@@ -92,6 +92,7 @@ export default function ProductCards({
   categories: Category[];
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
   const [isError, setIsError] = useState("");
   const searchParams = useSearchParams();
 
@@ -167,6 +168,7 @@ export default function ProductCards({
       } finally {
         if (isMounted) {
           setIsLoading(false);
+          setHasFetched(true);
         }
       }
     }
@@ -437,20 +439,16 @@ export default function ProductCards({
           </div>
           {isLoading ? (
             <Loading />
+          ) : !hasFetched ? null : products.length === 0 ? (
+            <p className='py-10 text-muted-foreground text-sm md:text-lg xl:text-xl text-center'>
+              No products found for your filters
+            </p>
           ) : (
-            <>
-              {products.length === 0 ? (
-                <p className='py-10 text-muted-foreground text-sm md:text-lg xl:text-xl text-center'>
-                  No products found for your filters
-                </p>
-              ) : (
-                <div className='gap-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-                  {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              )}
-            </>
+            <div className='gap-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
           )}
         </div>
 
