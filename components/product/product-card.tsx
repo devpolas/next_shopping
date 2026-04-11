@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Product } from "@/types/product";
+import { namePerfect } from "@/utils/utils";
 import { ShoppingCart } from "lucide-react";
 import { CldImage } from "next-cloudinary";
 import Link from "next/link";
@@ -31,7 +32,7 @@ export function ProductCard({ product }: { product: Product }) {
         {product.brand?.name && (
           <div className='top-3 left-3 z-20 absolute'>
             <Badge variant='secondary' className='opacity-90'>
-              {product.brand.name}
+              {namePerfect(product.brand.name)}
             </Badge>
           </div>
         )}
@@ -65,7 +66,7 @@ export function ProductCard({ product }: { product: Product }) {
         <Button>
           <ShoppingCart /> Add to cart
         </Button>
-        <Button>
+        <Button asChild>
           <Link href={`/product/${product.id}`}>View Details</Link>
         </Button>
       </CardFooter>
