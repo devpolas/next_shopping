@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   createBrand,
   createSubCategory,
   createSubSubCategory,
+  getSubCategories,
 } from "@/lib/actions/product.actions";
 import { toast } from "sonner";
 import { UseFormSetValue } from "react-hook-form";
 import { ProductInput } from "../product-create-schema";
 import { useRouter } from "next/navigation";
+import { SubCategory } from "@/types/product";
 
 export function useProductDialog(
   watchCategory: string,
@@ -17,6 +19,7 @@ export function useProductDialog(
   setValue: UseFormSetValue<ProductInput>,
 ) {
   const router = useRouter();
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<
     "brand" | "subcategory" | "subSubCategory" | ""
@@ -137,9 +140,42 @@ export function useProductDialog(
     }
   };
 
+  useEffect(() => {
+    if (!selectedCategory) {
+      //eslint-disable-next-line
+      setSubCategories([]);
+      return;
+    }
+
+    let active = true;
+
+    (async () => {
+      const res = await getSubCategories(selectedCategory);
+      if (active && res.success && res.subCategories) {
+        setSubCategories(res.subCategories);
+      }
+    })();
+
+    // reset dependent fields
+    setValue("subCategoryId", "");
+    setValue("subSubCategoryId", "");
+
+    return () => {
+      active = false;
+    };
+  }, [selectedCategory, watchCategory, setValue]);
+
+  const allDialogSubCategories = useMemo(() => {
+    return subCategories.map((sc) => ({
+      label: sc.name,
+      value: sc.id,
+    }));
+  }, [subCategories]);
+
   const currentDialog = dialogType ? dialogConfig[dialogType] : null;
 
   return {
+    allDialogSubCategories,
     currentDialog,
     isDialogOpen,
     dialogType,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,15 +87,15 @@ export default function CreateProduct({
   const watchSubCategory = watch("subCategoryId");
 
   //category-hook
-  const { subCategories, allSubCategories, allSubSubCategories } =
-    useProductCategoryTree({
-      categoryId: watchCategory,
-      subCategoryId: watchSubCategory,
-      setValue,
-    });
+  const { allSubCategories, allSubSubCategories } = useProductCategoryTree({
+    categoryId: watchCategory,
+    subCategoryId: watchSubCategory,
+    setValue,
+  });
 
   // dialog hook
   const {
+    allDialogSubCategories,
     currentDialog,
     isDialogOpen,
     dialogType,
@@ -444,7 +444,7 @@ export default function CreateProduct({
             <Field>
               <Label>Select Root Category</Label>
               <Select
-                value={selectedCategory ?? ""}
+                value={selectedCategory ?? undefined}
                 onValueChange={setSelectedCategory}
               >
                 <SelectTrigger>
@@ -466,7 +466,8 @@ export default function CreateProduct({
             <Field>
               <Label>Select Category</Label>
               <Select
-                value={selectedSubCategory ?? ""}
+                disabled={!selectedCategory}
+                value={selectedSubCategory ?? undefined}
                 onValueChange={setSelectedSubCategory}
               >
                 <SelectTrigger>
@@ -474,7 +475,7 @@ export default function CreateProduct({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {allSubCategories.map((option, i) => (
+                    {allDialogSubCategories.map((option, i) => (
                       <SelectItem key={i} value={option.value}>
                         {namePerfect(option.label)}
                       </SelectItem>
