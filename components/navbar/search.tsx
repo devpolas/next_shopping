@@ -30,6 +30,7 @@ export function Search() {
     const query = params.toString();
 
     router.push(query ? `/product?${query}` : "/product");
+    setSearch("");
   }
 
   return (
