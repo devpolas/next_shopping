@@ -23,7 +23,7 @@ interface ResponseInterface {
 
 export async function createBrand(name: string): Promise<ResponseInterface> {
   const brandName = name.trim();
-  const slug = slugify(brandName);
+  const slug = slugify(brandName, { lower: true, strict: true });
   try {
     const exists = await prisma.brand.findUnique({
       where: { name: brandName },
@@ -86,7 +86,7 @@ export async function createCategory(
   type: CategoryType,
   description?: string,
 ): Promise<ResponseInterface> {
-  const slug = slugify(name.trim());
+  const slug = slugify(name.trim(), { lower: true, strict: true });
 
   try {
     const exists = await prisma.category.findFirst({ where: { slug } });
@@ -161,7 +161,7 @@ export async function createSubCategory(
 ): Promise<ResponseInterface> {
   if (!categoryId)
     return { success: false, message: "Category ID is required" };
-  const slug = slugify(name.trim());
+  const slug = slugify(name.trim(), { lower: true, strict: true });
 
   try {
     const exists = await prisma.subCategory.findFirst({
@@ -236,7 +236,7 @@ export async function createSubSubCategory(
 ): Promise<ResponseInterface> {
   if (!subCategoryId)
     return { success: false, message: "SubCategory ID is required" };
-  const slug = slugify(name.trim());
+  const slug = slugify(name.trim(), { lower: true, strict: true });
 
   try {
     const exists = await prisma.subSubCategory.findFirst({
@@ -309,7 +309,7 @@ export async function createProduct(
 ): Promise<ResponseInterface> {
   try {
     const productData = productSchema.parse(data);
-    const slug = slugify(productData.name);
+    const slug = slugify(productData.name, { lower: true, strict: true });
 
     const exists = await prisma.product.findUnique({ where: { slug } });
     if (exists) return { success: false, message: "Product already exists" };
