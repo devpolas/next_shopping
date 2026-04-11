@@ -51,7 +51,7 @@ export default function ProductBreadcrumb({ product }: { product: Product }) {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href={`/product?category=${product.category.name}&subCategory=${product.subCategory.name}`}
+                    href={`/product?category=${product.category.slug}&subCategory=${product.subCategory.slug}`}
                   >
                     {product.subCategory.name}
                   </Link>
@@ -59,7 +59,7 @@ export default function ProductBreadcrumb({ product }: { product: Product }) {
                 {product.subSubCategory && (
                   <DropdownMenuItem asChild>
                     <Link
-                      href={`/product?category=${product.category.name}&subSubCategory=${product.subSubCategory.name}`}
+                      href={`/product?category=${product.category.slug}&subSubCategory=${product.subSubCategory.slug}`}
                     >
                       {product.subSubCategory.name}
                     </Link>
@@ -72,7 +72,7 @@ export default function ProductBreadcrumb({ product }: { product: Product }) {
           {/* Desktop: Show Category Label */}
           <div className='hidden md:block'>
             <BreadcrumbLink asChild>
-              <Link href={`/product?category=${product.category.name}`}>
+              <Link href={`/product?category=${product.category.slug}`}>
                 {product.category.name}
               </Link>
             </BreadcrumbLink>
@@ -84,7 +84,7 @@ export default function ProductBreadcrumb({ product }: { product: Product }) {
         <BreadcrumbItem className='hidden lg:block'>
           <BreadcrumbLink asChild>
             <Link
-              href={`/product?category=${product.category.name}&subCategory=${product.subCategory.name}`}
+              href={`/product?category=${product.category.slug}&subCategory=${product.subCategory.slug}`}
             >
               {product.subCategory.name}
             </Link>
@@ -97,7 +97,7 @@ export default function ProductBreadcrumb({ product }: { product: Product }) {
             <BreadcrumbItem className='hidden xl:block'>
               <BreadcrumbLink asChild>
                 <Link
-                  href={`/product?category=${product.category.name}&subSubCategory=${product.subSubCategory.name}`}
+                  href={`/product?category=${product.category.slug}&subSubCategory=${product.subSubCategory.slug}`}
                 >
                   {product.subSubCategory.name}
                 </Link>
@@ -112,7 +112,7 @@ export default function ProductBreadcrumb({ product }: { product: Product }) {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href={`/product?brand=${product.brand.name}`}>
+                <Link href={`/product?brand=${product.brand.slug}`}>
                   {product.brand.name}
                 </Link>
               </BreadcrumbLink>

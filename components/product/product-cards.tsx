@@ -1,7 +1,7 @@
 "use client";
 import { Product } from "@/types/product";
 import { ProductCard } from "./product-card";
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, Suspense, useEffect, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -13,6 +13,7 @@ import {
 } from "../ui/pagination";
 import { useSearchParams } from "next/navigation";
 import { getProducts } from "@/lib/actions/product.actions";
+import Loading from "@/app/loading";
 
 export default function ProductCards() {
   const searchParams = useSearchParams();
@@ -60,10 +61,10 @@ export default function ProductCards() {
         const response = await getProducts(
           PAGE_SIZE,
           skip,
-          search,
-          category,
-          subCategory,
-          subSubCategory,
+          search?.toLocaleLowerCase(),
+          category?.toLocaleLowerCase(),
+          subCategory?.toLocaleLowerCase(),
+          subSubCategory?.toLocaleLowerCase(),
         );
 
         if (response.success && response.products) {
@@ -84,51 +85,57 @@ export default function ProductCards() {
   }, [search, category, subCategory, subSubCategory]);
 
   return (
-    <div className='flex flex-col'>
-      <div className='gap-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-      <div className='py-16'>
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                className='hover:cursor-pointer'
-                onClick={() => setPage(page > 1 ? page - 1 : 1)}
-              />
-            </PaginationItem>
-
-            {getPageNumbers(page, Number(totalPages)).map((p, idx) => (
-              <PaginationItem key={idx}>
-                {typeof p === "number" ? (
-                  <PaginationLink
+    <Suspense fallback={<Loading />}>
+      <div className='flex flex-col'>
+        <div className='gap-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+        {totalPages > 1 && (
+          <div className='py-16'>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
                     className='hover:cursor-pointer'
-                    isActive={p === page}
-                    onClick={() => setPage(p)}
-                  >
-                    {p ? p : "..."}
-                  </PaginationLink>
-                ) : (
-                  <PaginationEllipsis />
-                )}
-              </PaginationItem>
-            ))}
+                    onClick={() => setPage(page > 1 ? page - 1 : 1)}
+                  />
+                </PaginationItem>
 
-            <PaginationItem>
-              <PaginationNext
-                className='hover:cursor-pointer'
-                onClick={() =>
-                  setPage(
-                    page < Number(totalPages) ? page + 1 : Number(totalPages),
-                  )
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+                {getPageNumbers(page, Number(totalPages)).map((p, idx) => (
+                  <PaginationItem key={idx}>
+                    {typeof p === "number" ? (
+                      <PaginationLink
+                        className='hover:cursor-pointer'
+                        isActive={p === page}
+                        onClick={() => setPage(p)}
+                      >
+                        {p ? p : "..."}
+                      </PaginationLink>
+                    ) : (
+                      <PaginationEllipsis />
+                    )}
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    className='hover:cursor-pointer'
+                    onClick={() =>
+                      setPage(
+                        page < Number(totalPages)
+                          ? page + 1
+                          : Number(totalPages),
+                      )
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
-    </div>
+    </Suspense>
   );
 }
