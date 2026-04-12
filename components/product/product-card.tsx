@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Product } from "@/types/product";
 import { namePerfect } from "@/utils/utils";
-import { ShoppingCart } from "lucide-react";
 import { CldImage } from "next-cloudinary";
 import Link from "next/link";
 
@@ -62,11 +61,8 @@ export function ProductCard({ product }: { product: Product }) {
         </CardDescription>
       </CardHeader>
 
-      <CardFooter className='flex justify-between'>
-        <Button>
-          <ShoppingCart /> Add to cart
-        </Button>
-        <Button asChild>
+      <CardFooter>
+        <Button className='w-full' variant={"outline"} asChild>
           <Link href={`/product/${product.id}`}>View Details</Link>
         </Button>
       </CardFooter>

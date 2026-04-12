@@ -19,8 +19,13 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 import ProductBreadcrumb from "./breadcrumb-product";
+import { addToCart } from "@/lib/actions/cart.actions";
+import { addToLocalCart } from "@/lib/actions/cart.local.actions";
+import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 
 export default function ProductDetails({ product }: { product: Product }) {
+  const { data: session } = authClient.useSession();
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [maxStock, setMaxStock] = useState<number>(0);
@@ -40,9 +45,43 @@ export default function ProductDetails({ product }: { product: Product }) {
     setMaxStock(maxStock);
   }, [selectedVariant]);
 
-  function handleCart() {
-    console.log(product.id, grandTotal, quantity);
+  async function handleCart() {
+    if (!selectedVariant) {
+      toast.error("Please select a variant");
+      return;
+    }
+
+    if (quantity > maxStock) {
+      toast.error("Not enough stock");
+      return;
+    }
+
+    // 👇 Guest user → local cart
+    if (!session?.user) {
+      addToLocalCart({
+        productId: product.id,
+        variantId: selectedVariant,
+        quantity,
+      });
+
+      toast.success("Added to cart");
+      return;
+    }
+
+    // 👇 Logged-in → server
+    try {
+      await addToCart({
+        productId: product.id,
+        variantId: selectedVariant,
+        quantity,
+      });
+
+      toast.success("Added to cart");
+    } catch (error) {
+      toast.error("Failed to add to cart");
+    }
   }
+
   function handleOrder() {
     console.log(product.id, grandTotal, quantity);
   }
@@ -206,7 +245,7 @@ export default function ProductDetails({ product }: { product: Product }) {
                     <Button
                       disabled={!selectedVariant}
                       variant='outline'
-                      className='group w-full h-12 font-semibold text-base'
+                      className='group w-full h-12 font-semibold text-base hover:cursor-pointer'
                       onClick={handleCart}
                     >
                       <ShoppingCart className='mr-2 w-5 h-5 transition-transform group-hover:-translate-y-1' />
@@ -216,7 +255,7 @@ export default function ProductDetails({ product }: { product: Product }) {
                     <Button
                       disabled={!selectedVariant}
                       className={cn(
-                        "shadow-lg shadow-primary/20 w-full h-12 font-bold text-base",
+                        "shadow-lg shadow-primary/20 w-full h-12 font-bold text-base hover:cursor-pointer",
                         selectedVariant && "animate-pulse-subtle",
                       )}
                       onClick={handleOrder}
