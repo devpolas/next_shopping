@@ -32,7 +32,7 @@ export function Heading3({ className, text }: PropsType) {
   return (
     <h3
       className={cn(
-        "font-semibold text-2xl tracking-tight scroll-m-20",
+        "font-semibold text-xl md:text-2xl tracking-tight scroll-m-20",
         className,
       )}
     >
@@ -45,7 +45,7 @@ export function Heading4({ className, text }: PropsType) {
   return (
     <h4
       className={cn(
-        "font-semibold text-xl tracking-tight scroll-m-20",
+        "font-semibold text-lg md:text-xl tracking-tight scroll-m-20",
         className,
       )}
     >
