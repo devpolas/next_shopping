@@ -62,7 +62,7 @@ A modern full-stack eCommerce application built with Next.js 16, React 19, Prism
 
 ## 📦 Installation
 
-```bash
+```sh
 # Clone the repo
 git clone https://github.com/your-username/next_shopping.git
 
@@ -92,13 +92,13 @@ EMAIL_PASS=your_email_password
 
 ## 🧪 Development
 
-```bash
+```sh
 npm run dev
 ```
 
 App will run at:
 
-```
+```sh
 http://localhost:3000
 ```
 
@@ -106,7 +106,7 @@ http://localhost:3000
 
 ## 🏗️ Build
 
-```bash
+```sh
 npm run build
 npm start
 ```
@@ -115,7 +115,7 @@ npm start
 
 ## 🧹 Lint
 
-```bash
+```sh
 npm run lint
 ```
 
@@ -123,7 +123,7 @@ npm run lint
 
 ## 🗄️ Database (Prisma)
 
-```bash
+```sh
 # Generate Prisma client
 npx prisma generate
 
@@ -135,7 +135,7 @@ npx prisma migrate dev
 
 ## 📁 Project Structure (Example)
 
-```
+```sh
 /app
 /components
 /hooks
@@ -180,7 +180,7 @@ Uses Nodemailer for sending emails (e.g., order confirmations, password reset).
 
 ## 🧑‍💻 Author
 
-**Your Name**
+**Polas Chandra Barmon (devpolas)**
 
 ---
 
